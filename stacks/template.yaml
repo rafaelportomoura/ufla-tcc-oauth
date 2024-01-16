@@ -349,6 +349,8 @@ Resources:
                           - secretsmanager:GetSecretValue
                           - sqs:ReceiveMessage
                           - sqs:SendMessage
+                          - kms:Decrypt
+                          - kms:GetPublicKey
                         Resource: "*"
             Tags:
               - Key: Service
@@ -462,12 +464,8 @@ Resources:
                     Value: !Ref LogLevel
                   - Name: MICROSERVICE
                     Value: !Ref Microservice
-                  - Name: DOCUMENT_SECRET
-                    Value:
-                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-${Microservice}-document-db-secret
-                  - Name: DOCUMENT_PARAMS
-                    Value:
-                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-${Microservice}-document-db-parameter
+                  - Name: KMS_ARN
+                    Value: !GetAtt EncryptKey.Arn
                 Image: !Ref Image
                 LogConfiguration:
                     LogDriver: awslogs
@@ -650,3 +648,60 @@ Resources:
                 ScaleOutCooldown: !Ref ScaleOutCooldown
                 TargetValue: !Ref CPUUtilization
 
+    # -----------------------------------------------------------
+    #  KMS
+    # -----------------------------------------------------------
+
+    EncryptKey:
+        Type: AWS::KMS::Key
+        Properties:
+            Description: !Sub ${Stage}-${Tenant}-${Microservice}-key
+            Enabled: true
+            KeyPolicy:
+                Version: 2012-10-17
+                Id: !Sub ${Stage}-${Tenant}-${Microservice}-key-policy
+                Statement:
+                  - Sid: Enable IAM User Permissions
+                    Effect: Allow
+                    Principal:
+                        AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+                    Action: kms:*
+                    Resource: '*'
+                  - Sid: Enable AdministradorGroup
+                    Effect: Allow
+                    Principal:
+                        AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:group/Administrador
+                    Action: kms:*
+                    Resource: '*'
+                  - Sid: Enable ECS
+                    Effect: Allow
+                    Principal:
+                        AWS: !GetAtt TaskRole.Arn
+                    Action:
+                      - kms:Decrypt
+                      - kms:GetPublicKey
+                    Resource: '*'
+            KeySpec: RSA_2048
+            KeyUsage: ENCRYPT_DECRYPT
+            MultiRegion: false
+            Origin: AWS_KMS
+            PendingWindowInDays: 7
+            Tags:
+              - Key: Service
+                Value: KMS
+              - Key: Resource
+                Value: Key
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}-${Microservice}-key
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant

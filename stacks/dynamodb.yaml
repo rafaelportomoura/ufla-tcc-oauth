@@ -13,20 +13,16 @@ Conditions:
     IsProdCondition: !Equals [!Ref Stage, "prod"]
 
 Resources:
-    DynamoTable:
+    UserGroups:
         Type: AWS::DynamoDB::Table
         Properties:
-            TableName: !Sub ${Stage}_${Tenant}_${Microservice}_name
+            TableName: !Sub ${Stage}_${Tenant}_user_groups
             AttributeDefinitions:
-              - AttributeName: hash
-                AttributeType: S
-              - AttributeName: range
+              - AttributeName: user
                 AttributeType: S
             KeySchema:
-              - AttributeName: hash
+              - AttributeName: user
                 KeyType: HASH
-              - AttributeName: range
-                KeyType: RANGE
             BillingMode: PAY_PER_REQUEST
             StreamSpecification:
                 StreamViewType: NEW_AND_OLD_IMAGES
@@ -48,9 +44,54 @@ Resources:
               - Key: Tenant
                 Value: !Ref Tenant
               - Key: Name
-                Value: !Sub ${Stage}-${Tenant}_name
+                Value: !Sub ${Stage}-${Tenant}_user_groups
             PointInTimeRecoverySpecification:
                 PointInTimeRecoveryEnabled: !If [IsProdCondition, true, false]
-            TimeToLiveSpecification:
-                AttributeName: ttl
-                Enabled: false
+
+    Groups:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            TableName: !Sub ${Stage}_${Tenant}_groups
+            AttributeDefinitions:
+              - AttributeName: group
+                AttributeType: S
+            KeySchema:
+              - AttributeName: group
+                KeyType: HASH
+            BillingMode: PAY_PER_REQUEST
+            StreamSpecification:
+                StreamViewType: NEW_AND_OLD_IMAGES
+            Tags:
+              - Key: Service
+                Value: DynamoDB
+              - Key: Resource
+                Value: Table
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}_groups
+            PointInTimeRecoverySpecification:
+                PointInTimeRecoveryEnabled: !If [IsProdCondition, true, false]
+
+Outputs:
+    UserGroups:
+        Description: UserGroups
+        Value: !Ref UserGroups
+        Export:
+            Name: !Sub ${Stage}-${Tenant}-user-groups-table
+
+    Groups:
+        Description: Groups
+        Value: !Ref Groups
+        Export:
+            Name: !Sub ${Stage}-${Tenant}-groups-table

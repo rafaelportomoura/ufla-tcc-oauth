@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { example_routes } from './Example';
+import { key_routes } from './keys';
 
 const router = Router();
-router.use('/example', example_routes);
+router.use('/key', key_routes);
 
 export { router };

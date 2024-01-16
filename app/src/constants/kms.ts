@@ -1,0 +1,1 @@
+export const ENCRYPTION_ALGORITHM = 'RSAES_OAEP_SHA_256' as const;

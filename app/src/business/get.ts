@@ -1,5 +1,5 @@
-import { Logger } from '../adapters/logger';
 /* eslint-disable no-empty-function */
+import { Logger } from '../adapters/logger';
 import { ExampleRepository } from '../repositories/exampleRepository';
 import { Example } from '../types/Example';
 

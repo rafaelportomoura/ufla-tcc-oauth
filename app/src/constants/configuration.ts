@@ -8,12 +8,10 @@ export const CONFIGURATION = {
   STAGE: set_string_env('STAGE', 'dev'),
   TENANT: set_string_env('TENANT', 'tcc'),
   REGION: set_string_env('REGION', 'us-east-2'),
-  DOCUMENT_SECRET: set_string_env('DOCUMENT_SECRET', 'dev-tcc-microservice-db'),
-  DOCUMENT_PARAMS: set_string_env('DOCUMENT_PARAMS', 'dev-tcc-microservice-db'),
   MICROSERVICE: set_string_env('MICROSERVICE', 'microservice'),
   LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', 'debug'),
-  TTL: set_number_env('TTL', 86400),
   PORT: set_number_env('PORT', 3000),
-  EXAMPLE_TABLE: set_string_env('EXAMPLE_TABLE', 'table'),
+  USER_GROUPS_TABLE: set_string_env('USER_GROUPS_TABLE', 'table'),
+  KEY_ARN: set_string_env('KEY_ARN', ''),
   EVENT_BUS: set_string_env('EVENT_BUS', 'event/bus')
 } as const;
