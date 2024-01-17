@@ -11,3 +11,9 @@ export type UserGroup = (typeof USER_COMMON_GROUPS)[keyof typeof USER_COMMON_GRO
 export type CreateUser = Omit<AdminCreateUserRequest, 'UserPoolId' | 'MessageAction' | 'DesiredDeliveryMediums'>;
 
 export type SetUserPassword = Omit<AdminSetUserPasswordRequest, 'UserPoolId'>;
+
+export type ConfirmForgotPassword = {
+  username: string;
+  password: string;
+  confirmation_code: string;
+};

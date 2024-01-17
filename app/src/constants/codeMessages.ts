@@ -26,5 +26,21 @@ export const CODE_MESSAGES = {
   INVALID_CREDENTIALS: {
     code: prefix('0005'),
     message: 'Invalid Credentials!'
+  },
+  FORGOT_PASSWORD_RESPONSE: {
+    code: prefix('0006'),
+    message: 'An email will be send with verification code!'
+  },
+  CANT_FINALIZE_FORGOT_PASSWORD: {
+    code: prefix('0007'),
+    message: "Can't finalize forgot password process!"
+  },
+  CANT_FINALIZE_CONFIRMATION_FORGOT_PASSWORD: {
+    code: prefix('0008'),
+    message: "Can't finalize confirmation forgot password process!"
+  },
+  PASSWORD_CHANGED_RESPONSE: {
+    code: prefix('0009'),
+    message: 'Password changed!'
   }
 } as const;

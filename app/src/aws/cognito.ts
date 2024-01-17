@@ -8,6 +8,10 @@ import {
   AdminSetUserPasswordRequest,
   AdminSetUserPasswordResponse,
   CognitoIdentityProviderClient,
+  ConfirmForgotPasswordCommand,
+  ConfirmForgotPasswordCommandOutput,
+  ForgotPasswordCommand,
+  ForgotPasswordCommandOutput,
   InitiateAuthCommand,
   InitiateAuthRequest,
   InitiateAuthResponse
@@ -15,12 +19,12 @@ import {
 import { AWS_CONFIGURATION } from '../constants/aws';
 import { CONFIGURATION } from '../constants/configuration';
 import { Login } from '../types/Login';
-import { CreateUser, SetUserPassword } from '../types/User';
+import { ConfirmForgotPassword, CreateUser, SetUserPassword } from '../types/User';
 
 export class Cognito {
   constructor(
-    private user_pool_id = CONFIGURATION.COGNITO_USER_POLL,
-    private user_client_id = CONFIGURATION.COGNITO_CLIENT_ID,
+    private pool_id = CONFIGURATION.COGNITO_USER_POLL,
+    private client_id = CONFIGURATION.COGNITO_CLIENT_ID,
     private client = new CognitoIdentityProviderClient(AWS_CONFIGURATION)
   ) {}
 
@@ -28,7 +32,7 @@ export class Cognito {
     const input: AdminCreateUserRequest = {
       ...payload,
       MessageAction: 'SUPPRESS',
-      UserPoolId: this.user_pool_id
+      UserPoolId: this.pool_id
     };
 
     const command = new AdminCreateUserCommand(input);
@@ -39,7 +43,7 @@ export class Cognito {
   setUserPassword(payload: SetUserPassword): Promise<AdminSetUserPasswordResponse> {
     const input: AdminSetUserPasswordRequest = {
       ...payload,
-      UserPoolId: this.user_pool_id
+      UserPoolId: this.pool_id
     };
 
     const command = new AdminCreateUserCommand(input);
@@ -49,7 +53,7 @@ export class Cognito {
 
   getUser(username: string): Promise<AdminGetUserResponse> {
     const command = new AdminGetUserCommand({
-      UserPoolId: this.user_pool_id,
+      UserPoolId: this.pool_id,
       Username: username
     });
 
@@ -59,7 +63,7 @@ export class Cognito {
   login({ username, password }: Login): Promise<InitiateAuthResponse> {
     const input: InitiateAuthRequest = {
       AuthFlow: 'USER_PASSWORD_AUTH',
-      ClientId: this.user_client_id,
+      ClientId: this.client_id,
       AuthParameters: {
         USERNAME: username,
         PASSWORD: password
@@ -67,6 +71,30 @@ export class Cognito {
     };
 
     const command = new InitiateAuthCommand(input);
+
+    return this.client.send(command);
+  }
+
+  forgotPassword(username: string): Promise<ForgotPasswordCommandOutput> {
+    const command = new ForgotPasswordCommand({
+      ClientId: this.client_id,
+      Username: username,
+      ClientMetadata: { username }
+    });
+
+    return this.client.send(command);
+  }
+
+  confirmForgotPassword(payload: ConfirmForgotPassword): Promise<ConfirmForgotPasswordCommandOutput> {
+    const command = new ConfirmForgotPasswordCommand({
+      ClientId: this.client_id,
+      Username: payload.username,
+      Password: payload.password,
+      ConfirmationCode: payload.confirmation_code,
+      ClientMetadata: {
+        username: payload.username
+      }
+    });
 
     return this.client.send(command);
   }

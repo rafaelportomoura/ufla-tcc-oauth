@@ -19,7 +19,7 @@ export class CreateUserBusiness {
     await this.cognito.createUser(this.create_user_cognito_payload(payload));
     await this.cognito.setUserPassword(this.set_user_password_cognito_payload({ password, email: payload.email }));
     await this.event_bus.pub(
-      { email: payload.email, group: this.group },
+      { username: payload.email, group: this.group },
       { event: EVENTS.USER, type: EVENTS_TYPES.CREATED, status: EVENTS_STATUS.SUCCESS }
     );
   }

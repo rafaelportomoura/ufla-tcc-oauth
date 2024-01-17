@@ -6,7 +6,7 @@ import { User } from '../types/User';
   allowUnknown: false
 })
 export class CreateCustomerDTO implements User {
-  @JoiSchema(Joi.string().required())
+  @JoiSchema(Joi.string().email().required())
   email: string;
 
   @JoiSchema(Joi.string().required())

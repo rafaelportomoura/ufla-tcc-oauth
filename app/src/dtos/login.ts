@@ -1,13 +1,13 @@
 import Joi from 'joi';
 import { JoiSchema, JoiSchemaOptions } from 'joi-class-decorators';
-import { User } from '../types/User';
+import { Login } from '../types/Login';
 
 @JoiSchemaOptions({
   allowUnknown: false
 })
-export class CreateAdminDTO implements User {
-  @JoiSchema(Joi.string().email().required())
-  email: string;
+export class LoginDTO implements Login {
+  @JoiSchema(Joi.string().required())
+  username: string;
 
   @JoiSchema(Joi.string().required())
   password: string;
