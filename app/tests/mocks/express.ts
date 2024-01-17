@@ -24,7 +24,7 @@ export class MockExpress {
     } as unknown as Response;
   }
 
-  static request(request?: Record<string, unknown>): Request {
+  static request(request: Record<string, unknown> = {}): Request {
     return request as unknown as Request;
   }
 

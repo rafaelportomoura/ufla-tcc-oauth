@@ -1,13 +1,14 @@
 /* eslint-disable no-empty-function */
 import { DecryptCommand, DecryptRequest, GetPublicKeyCommand, KMSClient } from '@aws-sdk/client-kms';
+import { AWS_CONFIGURATION } from '../constants/aws';
 import { CONFIGURATION } from '../constants/configuration';
 import { ENCRYPTION_ALGORITHM } from '../constants/kms';
 import { PubKey } from '../types/Kms';
 
 export class KMS {
   constructor(
-    private key_arn: string,
-    private client = new KMSClient({ region: CONFIGURATION.REGION })
+    private key_arn = CONFIGURATION.KEY_ARN,
+    private client = new KMSClient(AWS_CONFIGURATION)
   ) {}
 
   async decrypt(value: string): Promise<string> {

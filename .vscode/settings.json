@@ -25,6 +25,7 @@
     "disponível",
     "distribuída",
     "distribuído",
+    "dtos",
     "escalar",
     "escalável",
     "estática",
@@ -67,8 +68,8 @@
   "editor.formatOnType": false,
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "never",
-    "source.fixAll.eslint": "never"
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit"
   },
 
   "eslint.enable": true,
@@ -87,10 +88,6 @@
   "prettier.ignorePath": ".prettierignore",
 
   "[json]": {
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": false
-    },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.quickSuggestions": {
@@ -118,8 +115,8 @@
     "editor.insertSpaces": true,
     "editor.autoIndent": "advanced",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": false
+      "source.organizeImports": "never",
+      "source.fixAll": "never"
     },
     "editor.defaultFormatter": "kennylong.kubernetes-yaml-formatter",
     "editor.formatOnSave": true,
@@ -141,12 +138,6 @@
     "exceptions": "Error"
   },
 
-  "[json][yaml]": {
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "never",
-      "source.fixAll": "never"
-    }
-  },
 
   "workbench.iconTheme": "material-icon-theme"
 }

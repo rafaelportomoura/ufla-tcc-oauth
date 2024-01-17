@@ -1,15 +1,10 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable no-useless-constructor */
 import { GetSecretValueCommand, GetSecretValueRequest, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
-
-import { CONFIGURATION } from '../constants/configuration';
+import { AWS_CONFIGURATION } from '../constants/aws';
 
 export class SecretsManager {
-  constructor(
-    private client = new SecretsManagerClient({
-      region: CONFIGURATION.REGION
-    })
-  ) {}
+  constructor(private client = new SecretsManagerClient(AWS_CONFIGURATION)) {}
 
   async getSecret<T = unknown>(secret_path: string): Promise<T> {
     const input: GetSecretValueRequest = {

@@ -17,16 +17,13 @@ import {
   ScanCommandInput,
   ScanCommandOutput
 } from '@aws-sdk/lib-dynamodb';
-import { CONFIGURATION } from '../constants/configuration';
+import { AWS_CONFIGURATION } from '../constants/aws';
 
 export class DynamoDB {
   private client: DynamoDBDocumentClient;
 
-  constructor(
-    protected table: string,
-    region: string = CONFIGURATION.REGION
-  ) {
-    this.client = DynamoDBDocumentClient.from(new DynamoDBClient({ region }));
+  constructor(protected table: string) {
+    this.client = DynamoDBDocumentClient.from(new DynamoDBClient(AWS_CONFIGURATION));
   }
 
   put(input: Omit<PutCommandInput, 'TableName'>): Promise<PutCommandOutput> {

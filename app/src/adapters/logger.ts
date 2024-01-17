@@ -46,7 +46,14 @@ export class Logger implements ILogger {
   private flush(...args: unknown[]): void {
     if (process.env.NODE_ENV === 'test') return;
     const { tracing_id } = this;
-    const str = JSON.stringify;
+    const str = (v: unknown) => {
+      try {
+        const res = JSON.stringify(v);
+        return res;
+      } catch (error) {
+        return v;
+      }
+    };
     const mapper = (v: unknown) => (typeof v === 'object' ? str(v) : v);
     const tracing_log = tracing_id ? [str({ tracing_id }), '|'] : [];
     console.log(...tracing_log, ...args.map(mapper));

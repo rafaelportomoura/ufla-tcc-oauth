@@ -51,4 +51,16 @@ describe('Test Suit - Logger', () => {
     expect(logger['tracing_id']).equal('id');
     expect(logger['level']).equal(LOGGER_LEVEL_MAP[CONFIGURATION.LOG_LEVEL]);
   });
+
+  it('Should not stringify circular object', () => {
+    const logger = new Logger('id');
+
+    const obj: Record<string, unknown> = { self: null };
+    obj.self = obj;
+    logger.log(obj);
+
+    expect(console_stub.args[0]).deep.equal(['{"tracing_id":"id"}', '|', obj]);
+    expect(logger['tracing_id']).equal('id');
+    expect(logger['level']).equal(LOGGER_LEVEL_MAP[CONFIGURATION.LOG_LEVEL]);
+  });
 });

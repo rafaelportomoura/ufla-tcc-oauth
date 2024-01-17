@@ -45,6 +45,7 @@ Parameters:
         Description: ECR Image
     LogLevel:
         Type: String
+        Default: info
         AllowedValues:
           - error
           - warn
@@ -466,6 +467,21 @@ Resources:
                     Value: !Ref Microservice
                   - Name: KMS_ARN
                     Value: !GetAtt EncryptKey.Arn
+                  - Name: GROUPS_TABLE
+                    Value:
+                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-groups-table
+                  - Name: COGNITO_USER_POLL
+                    Value:
+                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-user-pool-id
+                  - Name: COGNITO_CLIENT_ID
+                    Value:
+                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-user-pool-client
+                  - Name: EVENT_BUS
+                    Value:
+                        Fn::ImportValue: !Sub ${Stage}-${Tenant}-event-bus
+                  - Name: BASIC_AUTH_SECRET
+                    Value: !Sub ${Stage}-${Tenant}-${Microservice}-basic-auth
+
                 Image: !Ref Image
                 LogConfiguration:
                     LogDriver: awslogs
@@ -647,6 +663,38 @@ Resources:
                 ScaleInCooldown: !Ref ScaleInCooldown
                 ScaleOutCooldown: !Ref ScaleOutCooldown
                 TargetValue: !Ref CPUUtilization
+
+    # -----------------------------------------------------------
+    #  BASIC AUTH SECRET
+    # -----------------------------------------------------------
+    BasicAuthSecretManager:
+        Type: AWS::SecretsManager::Secret
+        Properties:
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}-basic-auth
+            GenerateSecretString:
+                SecretStringTemplate: !Sub '{"username": "${Microservice}"}'
+                GenerateStringKey: "password"
+                PasswordLength: 30
+                ExcludeCharacters: '"@/\'
+            Tags:
+              - Key: Service
+                Value: SecretsManager
+              - Key: Resource
+                Value: Secret
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}-${Microservice}-basic-auth
 
     # -----------------------------------------------------------
     #  KMS
