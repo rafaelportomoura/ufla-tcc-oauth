@@ -9,7 +9,7 @@ import { create_request_id } from '../utils/createRequestId';
 
 export const error_middleware = (error: Error, req: Request, response: Response, __: NextFunction) => {
   const logger = new Logger(create_request_id(req));
-  logger.error(error);
+  logger.error(error, error.message);
 
   if (error instanceof BaseError) return response.status(error.status).json(error);
 

@@ -5,8 +5,10 @@ import {
   AdminCreateUserResponse,
   AdminGetUserCommand,
   AdminGetUserResponse,
+  AdminSetUserPasswordCommand,
   AdminSetUserPasswordRequest,
   AdminSetUserPasswordResponse,
+  AttributeType,
   CognitoIdentityProviderClient,
   ConfirmForgotPasswordCommand,
   ConfirmForgotPasswordCommandOutput,
@@ -19,7 +21,7 @@ import {
 import { AWS_CONFIGURATION } from '../constants/aws';
 import { CONFIGURATION } from '../constants/configuration';
 import { Login } from '../types/Login';
-import { ConfirmForgotPassword, CreateUser, SetUserPassword } from '../types/User';
+import { ConfirmForgotPassword, CreateUser } from '../types/User';
 
 export class Cognito {
   constructor(
@@ -40,13 +42,13 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  setUserPassword(payload: SetUserPassword): Promise<AdminSetUserPasswordResponse> {
+  setUserPassword(payload: Omit<AdminSetUserPasswordRequest, 'UserPoolId'>): Promise<AdminSetUserPasswordResponse> {
     const input: AdminSetUserPasswordRequest = {
       ...payload,
       UserPoolId: this.pool_id
     };
 
-    const command = new AdminCreateUserCommand(input);
+    const command = new AdminSetUserPasswordCommand(input);
 
     return this.client.send(command);
   }
@@ -97,5 +99,9 @@ export class Cognito {
     });
 
     return this.client.send(command);
+  }
+
+  getGroup(user_attributes: AttributeType[]): string {
+    return user_attributes.find((v) => v.Name === 'custom:group')?.Value;
   }
 }
