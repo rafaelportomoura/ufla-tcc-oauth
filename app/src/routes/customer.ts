@@ -1,8 +1,8 @@
-import { Router } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { createCustomer } from '../controllers/createCustomer';
 
-const customer_routes = Router();
-
-customer_routes.post('/', createCustomer);
-
-export { customer_routes };
+export function customer(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
+  server.post('/', createCustomer);
+  done();
+}

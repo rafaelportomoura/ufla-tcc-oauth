@@ -5,11 +5,11 @@ const set_number_env = (key: string, default_value: number) => Number(set_env(ke
 const set_string_env = (key: string, default_value: unknown) => String(set_env(key, default_value));
 
 export const CONFIGURATION = {
-  STAGE: set_string_env('STAGE', 'dev'),
+  STAGE: set_string_env('STAGE', 'development'),
   TENANT: set_string_env('TENANT', 'tcc'),
   REGION: set_string_env('REGION', 'us-east-2'),
   MICROSERVICE: set_string_env('MICROSERVICE', 'oauth'),
-  LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', 'debug'),
+  LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', 'trace'),
   PORT: set_number_env('PORT', 3000),
   GROUPS_TABLE: set_string_env('GROUPS_TABLE', 'table'),
   KEY_ARN: set_string_env('KEY_ARN', 'arn:aws:kms:us-east-2:076005165667:key/332efb47-f26f-4834-83e4-ad28a1f8f943'),

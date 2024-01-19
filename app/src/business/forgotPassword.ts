@@ -2,11 +2,16 @@ import { CODE_MESSAGES } from '../constants/codeMessages';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
 import { BadRequestError } from '../exceptions/BadRequestError';
+import { ForgotPassword } from '../types/ForgotPassword';
 
 export class ForgotPasswordBusiness {
-  constructor(private cognito = new Cognito()) {}
+  private cognito: Cognito;
 
-  async forgot(username: string): Promise<void> {
+  constructor() {
+    this.cognito = new Cognito();
+  }
+
+  async forgot({ username }: ForgotPassword): Promise<void> {
     try {
       await this.cognito.forgotPassword(username);
     } catch (error) {

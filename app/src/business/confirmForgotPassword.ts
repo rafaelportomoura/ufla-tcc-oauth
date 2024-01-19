@@ -2,7 +2,7 @@ import { CODE_MESSAGES } from '../constants/codeMessages';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
 import { BadRequestError } from '../exceptions/BadRequestError';
-import { ConfirmForgotPassword } from '../types/User';
+import { ConfirmForgotPassword } from '../types/ForgotPassword';
 
 export class ConfirmForgotPasswordBusiness {
   constructor(private cognito = new Cognito()) {}

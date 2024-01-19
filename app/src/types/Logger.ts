@@ -1,10 +1,3 @@
-export interface ILogger {
-  error(...args: unknown[]): void;
-  warn(...args: unknown[]): void;
-  log(...args: unknown[]): void;
-  info(...args: unknown[]): void;
-  verbose(...args: unknown[]): void;
-  debug(...args: unknown[]): void;
-}
+import { PinoLoggerOptions } from 'fastify/types/logger';
 
-export type LoggerLevel = keyof ILogger;
+export type LoggerLevel = PinoLoggerOptions['level'];

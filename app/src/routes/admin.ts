@@ -1,8 +1,7 @@
-import { Router } from 'express';
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { createAdmin } from '../controllers/createAdmin';
 
-const admin_routes = Router();
-
-admin_routes.post('/', createAdmin);
-
-export { admin_routes };
+export function admin(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
+  server.post('/', createAdmin);
+  done();
+}

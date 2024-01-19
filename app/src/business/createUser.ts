@@ -1,22 +1,33 @@
 import { AdminSetUserPasswordRequest } from '@aws-sdk/client-cognito-identity-provider';
+import { FastifyBaseLogger } from 'fastify';
 import { KMS } from '../aws/kms';
-import { CreateUser, SetUserPassword, UserGroup } from '../types/User';
+import { CreateUser, SetUserPassword, User, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
 import { EVENTS, EVENTS_STATUS, EVENTS_TYPES } from '../constants/events';
-import { CreateUserDTO } from '../dtos/user';
 import { cognitoErrorHandler } from '../exceptions/cognitoErrorHandler';
 import { EventBus } from '../services/EventBus';
 
 export class CreateUserBusiness {
-  constructor(
-    private group: UserGroup,
-    private kms = new KMS(),
-    private cognito = new Cognito(),
-    private event_bus = new EventBus()
-  ) {}
+  private group: UserGroup;
 
-  async create(payload: CreateUserDTO): Promise<void> {
+  private kms: KMS;
+
+  private cognito: Cognito;
+
+  private event_bus: EventBus;
+
+  constructor(
+    group: UserGroup,
+    private logger: FastifyBaseLogger
+  ) {
+    this.group = group;
+    this.kms = new KMS();
+    this.cognito = new Cognito();
+    this.event_bus = new EventBus();
+  }
+
+  async create(payload: CreateUser): Promise<void> {
     try {
       const password = await this.kms.decrypt(payload.password);
       await this.cognito.createUser(this.create_user_cognito_payload(payload));
@@ -32,25 +43,8 @@ export class CreateUserBusiness {
     }
   }
 
-  create_user_cognito_payload(payload: CreateUserDTO): CreateUser {
-    return {
-      Username: payload.username,
-      UserAttributes: [
-        {
-          Name: 'email',
-          Value: payload.email
-        },
-        {
-          Name: 'custom:group',
-          Value: this.group
-        }
-      ],
-      ClientMetadata: {
-        username: payload.username,
-        email: payload.email,
-        group: this.group
-      }
-    };
+  create_user_cognito_payload(payload: CreateUser): User {
+    return { ...payload, 'custom:group': this.group };
   }
 
   set_user_password_cognito_payload(payload: SetUserPassword): Omit<AdminSetUserPasswordRequest, 'UserPoolId'> {

@@ -1,15 +1,15 @@
-import { Router } from 'express';
-import { admin_routes } from './admin';
-import { customer_routes } from './customer';
-import { key_routes } from './keys';
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
+import { admin } from './admin';
+import { customer } from './customer';
+import { key } from './keys';
 import { oauth } from './oauth';
-import { sys_admin_routes } from './sysadmin';
+import { sys_admins } from './sysadmin';
 
-const router = Router();
-router.use('/key', key_routes);
-router.use('/customer', customer_routes);
-router.use('/admin', admin_routes);
-router.use('/sys_admin_routes', sys_admin_routes);
-router.use('/oauth', oauth);
-
-export { router };
+export function router(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
+  server.register(key, { prefix: '/keys' });
+  server.register(customer, { prefix: '/customers' });
+  server.register(admin, { prefix: '/admins' });
+  server.register(sys_admins, { prefix: '/sys_admins' });
+  server.register(oauth, { prefix: '/oauth' });
+  done();
+}

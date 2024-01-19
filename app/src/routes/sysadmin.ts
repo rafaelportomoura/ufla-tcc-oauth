@@ -1,8 +1,8 @@
-import { Router } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { sysAdminCreateAdmin } from '../controllers/sysAdminCreateAdmin';
 
-const sys_admin_routes = Router();
-
-sys_admin_routes.post('/admin', sysAdminCreateAdmin);
-
-export { sys_admin_routes };
+export function sys_admins(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
+  server.post('/admin', sysAdminCreateAdmin);
+  done();
+}

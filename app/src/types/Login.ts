@@ -1,7 +1,7 @@
-export type Login = {
-  username: string;
-  password: string;
-};
+import { z } from 'zod';
+import { login_schema } from '../schemas/login';
+
+export type Login = z.infer<typeof login_schema>;
 
 export type LoginResponse = {
   access_token: string;

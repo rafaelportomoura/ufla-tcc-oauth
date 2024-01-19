@@ -20,8 +20,9 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AWS_CONFIGURATION } from '../constants/aws';
 import { CONFIGURATION } from '../constants/configuration';
+import { ConfirmForgotPassword } from '../types/ForgotPassword';
 import { Login } from '../types/Login';
-import { ConfirmForgotPassword, CreateUser } from '../types/User';
+import { User } from '../types/User';
 
 export class Cognito {
   constructor(
@@ -30,9 +31,24 @@ export class Cognito {
     private client = new CognitoIdentityProviderClient(AWS_CONFIGURATION)
   ) {}
 
-  createUser(payload: CreateUser): Promise<AdminCreateUserResponse> {
+  createUser(payload: User): Promise<AdminCreateUserResponse> {
     const input: AdminCreateUserRequest = {
-      ...payload,
+      Username: payload.username,
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: payload.email
+        },
+        {
+          Name: 'custom:group',
+          Value: payload['custom:group']
+        }
+      ],
+      ClientMetadata: {
+        username: payload.username,
+        email: payload.email,
+        group: payload['custom:group']
+      },
       MessageAction: 'SUPPRESS',
       UserPoolId: this.pool_id
     };
@@ -102,6 +118,6 @@ export class Cognito {
   }
 
   getGroup(user_attributes: AttributeType[]): string {
-    return user_attributes.find((v) => v.Name === 'custom:group')?.Value;
+    return user_attributes.find((v) => v.Name === 'custom:group')?.Value as string;
   }
 }

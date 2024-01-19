@@ -12,6 +12,10 @@ export class AuthorizerBusiness {
 
     const { username } = decoded;
 
+    const is_endpoint_at_all_users_group = await this.verifyAllUsersGroup();
+
+    if (is_endpoint_at_all_users_group) return { is_authorized: true };
+
     const user = await this.cognito.getUser(username);
 
     const group = this.cognito.getGroup(user.UserAttributes);
@@ -25,5 +29,9 @@ export class AuthorizerBusiness {
     const decoded = jwtDecode<DecodedToken>(authorization);
 
     return decoded;
+  }
+
+  async verifyAllUsersGroup(): Promise<boolean> {
+    return false;
   }
 }

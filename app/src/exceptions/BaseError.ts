@@ -24,6 +24,6 @@ export class BaseError extends Error {
 
   toJSON() {
     const { message, code, name } = this;
-    return { code, message, name };
+    return { code, message, error: name };
   }
 }

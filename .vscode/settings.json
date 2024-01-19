@@ -32,6 +32,8 @@
     "estrutura",
     "Fácil",
     "facilitar",
+    "fastify",
+    "Fastify",
     "fornece",
     "implantar",
     "interagir",
@@ -129,14 +131,4 @@
     "editor.detectIndentation": true,
     "editor.indentSize": "tabSize"
   },
-
-  "material-icon-theme.folders.associations": {
-    "business": "Core",
-    "services": "Job",
-    "handlers": "Public",
-    "adapters": "Shared",
-    "exceptions": "Error"
-  },
-
-  "workbench.iconTheme": "material-icon-theme"
 }

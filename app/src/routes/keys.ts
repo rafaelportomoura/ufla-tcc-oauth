@@ -1,8 +1,8 @@
-import { Router } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify';
 import { getPubKey } from '../controllers/getPubKey';
 
-const key_routes = Router();
-
-key_routes.get('/pubkey', getPubKey);
-
-export { key_routes };
+export function key(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
+  server.get('/pub-key', getPubKey);
+  done();
+}

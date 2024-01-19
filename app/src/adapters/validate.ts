@@ -1,23 +1,15 @@
 /* eslint-disable no-empty-function */
-import { getClassSchema } from 'joi-class-decorators';
-import { Constructor, JoiValidationGroup } from 'joi-class-decorators/internal/defs';
-import { CODE_MESSAGES } from '../constants/codeMessages';
+import { ZodType, z } from 'zod';
 import { ValidationError } from '../exceptions/ValidationError';
 
-export class Validator {
-  constructor(private validation_object: unknown) {}
+export class Validator<T> {
+  constructor(private schema: ZodType<T>) {}
 
-  async validateByClass<T>(class_definition: Constructor<T>, group?: JoiValidationGroup): Promise<T> {
-    const schema = getClassSchema(class_definition, group ? { group } : undefined);
-    const { error, value } = schema.validate(this.validation_object);
+  async validate(value_to_check: unknown): Promise<z.infer<ZodType<T>>> {
+    const result = await this.schema.safeParseAsync(value_to_check);
 
-    if (error) {
-      const { code } = CODE_MESSAGES.VALIDATION_ERROR;
-      const { message } = error;
+    if (result.success) return result.data;
 
-      throw new ValidationError({ code, message });
-    }
-
-    return value;
+    throw new ValidationError(result.error.format());
   }
 }

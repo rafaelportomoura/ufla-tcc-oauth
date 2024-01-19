@@ -15,6 +15,7 @@
     "inlineSourceMap": false,
     "inlineSources": false,
     "alwaysStrict": true,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "baseUrl": "app/src",
     "outDir": "dist"

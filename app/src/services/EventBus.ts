@@ -1,13 +1,12 @@
 /* eslint-disable no-empty-function */
-import { Logger } from '../adapters/logger';
+import { FastifyBaseLogger } from 'fastify';
 import { SNS } from '../aws/sns';
-import { CONFIGURATION } from '../constants/configuration';
 import { EventBusMessageAttributes } from '../types/EventBus';
 
 export class EventBus {
   constructor(
-    private topic = CONFIGURATION.EVENT_BUS,
-    private logger = new Logger(),
+    private topic: string,
+    private logger: FastifyBaseLogger,
     private sns = new SNS()
   ) {}
 
