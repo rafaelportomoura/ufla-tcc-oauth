@@ -1,4 +1,3 @@
-/* eslint-disable no-empty-function */
 import {
   AdminCreateUserCommand,
   AdminCreateUserRequest,
@@ -10,6 +9,7 @@ import {
   AdminSetUserPasswordResponse,
   AttributeType,
   CognitoIdentityProviderClient,
+  CognitoIdentityProviderClientConfig,
   ConfirmForgotPasswordCommand,
   ConfirmForgotPasswordCommandOutput,
   ForgotPasswordCommand,
@@ -18,20 +18,23 @@ import {
   InitiateAuthRequest,
   InitiateAuthResponse
 } from '@aws-sdk/client-cognito-identity-provider';
-import { AWS_CONFIGURATION } from '../constants/aws';
-import { CONFIGURATION } from '../constants/configuration';
+import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
+/* eslint-disable no-empty-function */
 import { ConfirmForgotPassword } from '../types/ForgotPassword';
 import { Login } from '../types/Login';
-import { User } from '../types/User';
 
 export class Cognito {
-  constructor(
-    private pool_id = CONFIGURATION.COGNITO_USER_POLL,
-    private client_id = CONFIGURATION.COGNITO_CLIENT_ID,
-    private client = new CognitoIdentityProviderClient(AWS_CONFIGURATION)
-  ) {}
+  private client: CognitoIdentityProviderClient;
 
-  createUser(payload: User): Promise<AdminCreateUserResponse> {
+  constructor(
+    private pool_id: string,
+    private client_id: string,
+    config: CognitoIdentityProviderClientConfig
+  ) {
+    this.client = new CognitoIdentityProviderClient(config);
+  }
+
+  createUser(payload: CreateUser, group: UserGroup): Promise<AdminCreateUserResponse> {
     const input: AdminCreateUserRequest = {
       Username: payload.username,
       UserAttributes: [
@@ -41,13 +44,13 @@ export class Cognito {
         },
         {
           Name: 'custom:group',
-          Value: payload['custom:group']
+          Value: group
         }
       ],
       ClientMetadata: {
         username: payload.username,
         email: payload.email,
-        group: payload['custom:group']
+        group
       },
       MessageAction: 'SUPPRESS',
       UserPoolId: this.pool_id
@@ -58,9 +61,11 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  setUserPassword(payload: Omit<AdminSetUserPasswordRequest, 'UserPoolId'>): Promise<AdminSetUserPasswordResponse> {
+  setUserPassword(payload: SetUserPasswordCognito): Promise<AdminSetUserPasswordResponse> {
     const input: AdminSetUserPasswordRequest = {
-      ...payload,
+      Username: payload.username,
+      Password: payload.password,
+      Permanent: payload.permanent,
       UserPoolId: this.pool_id
     };
 
@@ -69,13 +74,13 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  getUser(username: string): Promise<AdminGetUserResponse> {
+  getUser(username: string): Promise<Required<AdminGetUserResponse>> {
     const command = new AdminGetUserCommand({
       UserPoolId: this.pool_id,
       Username: username
     });
 
-    return this.client.send(command);
+    return this.client.send(command) as Promise<Required<AdminGetUserResponse>>;
   }
 
   login({ username, password }: Login): Promise<InitiateAuthResponse> {
@@ -119,5 +124,13 @@ export class Cognito {
 
   getGroup(user_attributes: AttributeType[]): string {
     return user_attributes.find((v) => v.Name === 'custom:group')?.Value as string;
+  }
+
+  mapAttributes(user_attributes: Required<AttributeType>[]): UserAttributes {
+    const attributes = {} as UserAttributes;
+
+    for (const v of user_attributes) attributes[v.Name as keyof UserAttributes] = v.Value;
+
+    return attributes;
   }
 }

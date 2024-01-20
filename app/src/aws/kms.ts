@@ -1,15 +1,17 @@
 /* eslint-disable no-empty-function */
-import { DecryptCommand, DecryptRequest, GetPublicKeyCommand, KMSClient } from '@aws-sdk/client-kms';
-import { AWS_CONFIGURATION } from '../constants/aws';
-import { CONFIGURATION } from '../constants/configuration';
+import { DecryptCommand, DecryptRequest, GetPublicKeyCommand, KMSClient, KMSClientConfig } from '@aws-sdk/client-kms';
 import { ENCRYPTION_ALGORITHM } from '../constants/kms';
 import { PubKey } from '../types/Kms';
 
 export class KMS {
+  private client: KMSClient;
+
   constructor(
-    private key_arn = CONFIGURATION.KEY_ARN,
-    private client = new KMSClient(AWS_CONFIGURATION)
-  ) {}
+    private key_arn: string,
+    config: KMSClientConfig
+  ) {
+    this.client = new KMSClient(config);
+  }
 
   async decrypt(value: string): Promise<string> {
     const input: DecryptRequest = {
@@ -24,7 +26,7 @@ export class KMS {
 
     const { Plaintext: plain_text } = response;
 
-    return Buffer.from(plain_text).toString('utf-8');
+    return Buffer.from(plain_text as Uint8Array).toString('utf-8');
   }
 
   async getPubKey(): Promise<PubKey> {
@@ -37,7 +39,7 @@ export class KMS {
     return {
       key_spec: response.KeySpec,
       encryption_algorithm: ENCRYPTION_ALGORITHM,
-      public_key: Buffer.from(response.PublicKey).toString('base64')
-    };
+      public_key: Buffer.from(response.PublicKey as Uint8Array).toString('base64')
+    } as PubKey;
   }
 }

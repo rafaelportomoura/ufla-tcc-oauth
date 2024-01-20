@@ -48,5 +48,13 @@ export const CODE_MESSAGES = {
   PASSWORD_CHANGED_RESPONSE: {
     code: prefix(n++),
     message: 'Password changed!'
+  },
+  USER_NOT_FOUND: {
+    code: prefix(n++),
+    message: 'User was not found!'
+  },
+  FORBIDDEN: {
+    code: prefix(n++),
+    message: "User can't access this resource!"
   }
 } as const;

@@ -1,16 +1,13 @@
 /* eslint-disable no-empty-function */
-import { Logger } from '../adapters/logger';
+import { FastifyBaseLogger } from 'fastify/types/logger';
 import { DynamoDB } from '../aws/dynamodb';
 import { Example } from '../types/Example';
 
-export class ExampleRepository {
-  constructor(
-    private logger = new Logger(),
-    private db = new DynamoDB('example')
-  ) {}
+export class GroupRepository {
+  private db: DynamoDB;
 
-  setLogger(logger: Logger) {
-    this.logger = logger;
+  constructor(private logger: FastifyBaseLogger) {
+    this.db = new DynamoDB('example');
   }
 
   async getExample(id: string): Promise<Example> {

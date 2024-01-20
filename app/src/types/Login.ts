@@ -8,5 +8,5 @@ export type LoginResponse = {
   refresh_token: string;
   expiration_time: number;
   token_type: string;
-  group: string;
+  group?: string;
 };

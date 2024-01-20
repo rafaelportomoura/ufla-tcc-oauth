@@ -1,10 +1,18 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable no-useless-constructor */
-import { GetSecretValueCommand, GetSecretValueRequest, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
-import { AWS_CONFIGURATION } from '../constants/aws';
+import {
+  GetSecretValueCommand,
+  GetSecretValueRequest,
+  SecretsManagerClient,
+  SecretsManagerClientConfig
+} from '@aws-sdk/client-secrets-manager';
 
 export class SecretsManager {
-  constructor(private client = new SecretsManagerClient(AWS_CONFIGURATION)) {}
+  private client: SecretsManagerClient;
+
+  constructor(config: SecretsManagerClientConfig) {
+    this.client = new SecretsManagerClient(config);
+  }
 
   async getSecret<T = unknown>(secret_path: string): Promise<T> {
     const input: GetSecretValueRequest = {
@@ -15,6 +23,6 @@ export class SecretsManager {
 
     const secrets = await this.client.send(command);
 
-    return JSON.parse(secrets.SecretString) as T;
+    return JSON.parse(secrets.SecretString as string) as T;
   }
 }

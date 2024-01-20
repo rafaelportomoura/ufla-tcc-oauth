@@ -14,7 +14,7 @@ export const CONFIGURATION = {
   GROUPS_TABLE: set_string_env('GROUPS_TABLE', 'table'),
   KEY_ARN: set_string_env('KEY_ARN', 'arn:aws:kms:us-east-2:076005165667:key/332efb47-f26f-4834-83e4-ad28a1f8f943'),
   EVENT_BUS: set_string_env('EVENT_BUS', 'event/bus'),
-  COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', '601r8kvmslt416fv8829shkiai'),
-  COGNITO_USER_POLL: set_string_env('COGNITO_USER_POLL', 'us-east-2_334NEqSbZ'),
+  COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', 'poonujh0ab394u5ktp0pdssds'),
+  COGNITO_USER_POLL: set_string_env('COGNITO_USER_POLL', 'us-east-2_gBc9EI1X9'),
   BASIC_AUTH_SECRET: set_string_env('BASIC_AUTH_SECRET', '')
 } as const;

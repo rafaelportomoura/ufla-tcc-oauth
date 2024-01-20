@@ -1,4 +1,4 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import {
   DeleteCommand,
   DeleteCommandInput,
@@ -17,13 +17,15 @@ import {
   ScanCommandInput,
   ScanCommandOutput
 } from '@aws-sdk/lib-dynamodb';
-import { AWS_CONFIGURATION } from '../constants/aws';
 
 export class DynamoDB {
   private client: DynamoDBDocumentClient;
 
-  constructor(protected table: string) {
-    this.client = DynamoDBDocumentClient.from(new DynamoDBClient(AWS_CONFIGURATION));
+  constructor(
+    protected table: string,
+    config: DynamoDBClientConfig
+  ) {
+    this.client = DynamoDBDocumentClient.from(new DynamoDBClient(config));
   }
 
   put(input: Omit<PutCommandInput, 'TableName'>): Promise<PutCommandOutput> {

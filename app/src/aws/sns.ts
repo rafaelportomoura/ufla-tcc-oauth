@@ -1,9 +1,18 @@
 /* eslint-disable no-empty-function */
-import { PublishCommand, PublishCommandInput, PublishCommandOutput, SNSClient } from '@aws-sdk/client-sns';
-import { AWS_CONFIGURATION } from '../constants/aws';
+import {
+  PublishCommand,
+  PublishCommandInput,
+  PublishCommandOutput,
+  SNSClient,
+  SNSClientConfig
+} from '@aws-sdk/client-sns';
 
 export class SNS {
-  constructor(private client = new SNSClient(AWS_CONFIGURATION)) {}
+  private client: SNSClient;
+
+  constructor(config: SNSClientConfig) {
+    this.client = new SNSClient(config);
+  }
 
   async pub(input: PublishCommandInput): Promise<PublishCommandOutput> {
     const command = new PublishCommand(input);
