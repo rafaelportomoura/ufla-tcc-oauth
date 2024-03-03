@@ -1,0 +1,260 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    Stage:
+        Type: String
+    Tenant:
+        Type: String
+    Microservice:
+        Type: String
+    ApiBasePath:
+        Type: String
+    ListenerArn:
+        Type: String
+
+Conditions:
+    isProd: !Equals [!Ref Stage, prod]
+
+Resources:
+    # -----------------------------------------------
+    # API GATEWAY
+    # -----------------------------------------------
+    Integration:
+        Type: AWS::ApiGatewayV2::Integration
+        Properties:
+            ApiId: !Ref Api
+            IntegrationType: HTTP_PROXY
+            IntegrationMethod: ANY
+            IntegrationUri: !Ref ListenerArn
+            ConnectionType: VPC_LINK
+            ConnectionId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-vpc-link-id"}
+            PayloadFormatVersion: "1.0"
+            RequestParameters:
+                append:header.microservice: !Ref Microservice
+                append:header.requestId: $context.requestId
+                overwrite:path: '$request.path'
+
+
+    Route:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: $default
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: CUSTOM
+            AuthorizerId: !Ref Authorizer
+
+    RouteOptions:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: OPTIONS /{proxy+}
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    Api:
+        Type: AWS::ApiGatewayV2::Api
+        Properties:
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}-api
+            Description: !Sub ${Stage}-${Tenant}-${Microservice} Api
+            ProtocolType: HTTP
+            DisableExecuteApiEndpoint: true
+            CorsConfiguration:
+                AllowCredentials: false
+                AllowHeaders:
+                  - '*'
+                AllowMethods:
+                  - '*'
+                AllowOrigins:
+                  - '*'
+                ExposeHeaders:
+                  - '*'
+                MaxAge: 0
+            Tags:
+                Service: ApiGatewayV2
+                Resource: Api
+                Name: !Sub ${Stage}-${Tenant}-${Microservice}-api
+                StackName: !Ref AWS::StackName
+                StackId: !Ref AWS::StackId
+                Region: !Ref AWS::Region
+                Microservice: !Ref Microservice
+                Stage: !Ref Stage
+                Tenant: !Ref Tenant
+
+    ApiMapping:
+        Type: AWS::ApiGatewayV2::ApiMapping
+        Properties:
+            ApiId: !Ref Api
+            ApiMappingKey: !Ref ApiBasePath
+            DomainName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-domain-name"}
+            Stage: !Ref ApiStage
+
+    ApiDeployment:
+        DependsOn: Route
+        Type: AWS::ApiGatewayV2::Deployment
+        Properties:
+            ApiId: !Ref Api
+
+    ApiStage:
+        Type: AWS::ApiGatewayV2::Stage
+        Properties:
+            ApiId: !Ref Api
+            DeploymentId: !Ref ApiDeployment
+            StageName: !Ref Stage
+            AutoDeploy: true
+            AccessLogSettings:
+                DestinationArn: !GetAtt LogGroup.Arn
+                Format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId $context.integrationErrorMessage'
+
+            Tags:
+              - Key: Service
+                Value: ApiGatewayV2
+              - Key: Resource
+                Value: Stage
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}-${Microservice}-api-stage
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant
+
+    Authorizer:
+        Type: AWS::ApiGatewayV2::Authorizer
+        Properties:
+            Name: LambdaAuthorizer
+            ApiId: !Ref Api
+            AuthorizerType: REQUEST
+            AuthorizerUri: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-authorizer-uri"}
+            AuthorizerPayloadFormatVersion: '2.0'
+            AuthorizerResultTtlInSeconds: 0
+            IdentitySource:
+              - $request.header.Authorization
+
+
+    LambdaPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            Action: lambda:InvokeFunction
+            FunctionName: authorizer
+            Principal: apigateway.amazonaws.com
+            SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/authorizers/${Authorizer}
+
+    LogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            RetentionInDays: !If
+              - isProd
+              - !Ref AWS::NoValue
+              - 7
+            LogGroupName: !Sub /aws/api/${Stage}-${Tenant}-${Microservice}
+            Tags:
+              - Key: Service
+                Value: CloudWatch
+              - Key: Resource
+                Value: LogGroup
+              - Key: Name
+                Value: !Sub /aws/api/${Stage}-${Tenant}-${Microservice}
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant
+
+    # -----------------------------------------
+    # APP MESH
+    # -----------------------------------------
+    CloudMapService:
+        Type: AWS::ServiceDiscovery::Service
+        Properties:
+            Name: !Ref Microservice
+            NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
+            HealthCheckConfig:
+                Type: HTTP
+                ResourcePath: /health-check
+            DnsConfig:
+                DnsRecords:
+                  - Type: A
+                    TTL: 60
+                RoutingPolicy: MULTIVALUE
+
+    VirtualNode:
+        Type: AWS::AppMesh::VirtualNode
+        Properties:
+            MeshName:
+                Fn::ImportValue: !Sub ${Stage}-${Tenant}-app-mesh-name
+            VirtualNodeName: !Sub "${Microservice}-virtual-node"
+            Spec:
+                Listeners:
+                  - PortMapping:
+                        Port: 80
+                        Protocol: http
+                ServiceDiscovery:
+                    AWSCloudMap:
+                        NamespaceName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-name"}
+                        ServiceName: !Ref Microservice
+            Tags:
+              - Key: Service
+                Value: AppMesh
+              - Key: Resource
+                Value: VirtualNode
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}-app-mesh-name
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant
+
+    # ---------------------------------------------
+    # LOAD BALANCER
+    # ---------------------------------------------
+    TargetGroup:
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}
+            HealthCheckPath: "/health-check"
+            Port: 80
+            Protocol: HTTP
+            TargetType: ip
+            VpcId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-vpc-id"}
+            Tags:
+              - Key: Service
+                Value: ElasticLoadBalancingV2
+              - Key: Resource
+                Value: TargetGroup
+              - Key: Name
+                Value: !Sub ${Stage}-${Tenant}-${Microservice}
+              - Key: StackName
+                Value: !Ref AWS::StackName
+              - Key: StackId
+                Value: !Ref AWS::StackId
+              - Key: Region
+                Value: !Ref AWS::Region
+              - Key: Microservice
+                Value: !Ref Microservice
+              - Key: Stage
+                Value: !Ref Stage
+              - Key: Tenant
+                Value: !Ref Tenant

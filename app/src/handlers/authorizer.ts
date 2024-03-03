@@ -5,6 +5,7 @@ import {
 } from 'aws-lambda';
 import { AuthorizerBusiness } from '../business/authorizer';
 
+import { create_logger } from '../adapters/logger';
 import { aws_config } from '../aws/config';
 import { CONFIGURATION } from '../constants/configuration';
 import { ForbiddenError } from '../exceptions/ForbiddenError';
@@ -29,19 +30,22 @@ function forbiddenPolicy(event: APIGatewayRequestAuthorizerEventV2): APIGatewayA
 export async function authorizer(
   event: APIGatewayRequestAuthorizerEventV2
 ): Promise<APIGatewaySimpleAuthorizerWithContextResult<AuthorizerContext> | APIGatewayAuthorizerResult> {
-  const authorizer_business = new AuthorizerBusiness({
-    aws_config: aws_config(),
-    pool_id: CONFIGURATION.COGNITO_USER_POLL,
-    client_id: CONFIGURATION.COGNITO_CLIENT_ID,
-    cognito_issuer: CONFIGURATION.COGNITO_ISSUER
-  });
+  const logger = create_logger(CONFIGURATION.STAGE, CONFIGURATION.LOG_LEVEL);
   try {
-    const { headers, pathParameters: path_parameters, routeArn: arn } = event;
+    const authorizer_business = new AuthorizerBusiness({
+      aws_config: aws_config(),
+      pool_id: CONFIGURATION.COGNITO_USER_POLL,
+      client_id: CONFIGURATION.COGNITO_CLIENT_ID,
+      cognito_issuer: CONFIGURATION.COGNITO_ISSUER,
+      logger
+    });
+
+    const { pathParameters: path_parameters, routeArn: arn } = event;
 
     const params: Authorizer = {
       arn,
       path_parameters: (path_parameters as Record<string, string>) ?? {},
-      authorization: headers?.authorization as string
+      authorization: event.identitySource[0]
     };
 
     const { is_authorized, context } = await authorizer_business.authorize(params);
@@ -50,6 +54,7 @@ export async function authorizer(
       context: context ?? {}
     };
   } catch (error) {
+    logger.debug(error, 'authorizer error');
     if (error instanceof ForbiddenError) return forbiddenPolicy(event);
     return {
       isAuthorized: false,

@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import { PinoLoggerOptions } from 'fastify/types/logger';
-import { LoggerLevel } from '../types/Logger';
+import { pino } from 'pino';
+import { Logger, LoggerLevel } from '../types/Logger';
 
 const local_logger_options = (level: LoggerLevel): PinoLoggerOptions => ({
   level,
@@ -10,7 +12,7 @@ const local_logger_options = (level: LoggerLevel): PinoLoggerOptions => ({
 
 const aws_logger_options = (level: LoggerLevel): PinoLoggerOptions => ({ level });
 
-const test_logger_options = () => false;
+const test_logger_options = () => ({ level: 'silent' });
 
 export const logger_options = (stage: string, level: LoggerLevel) =>
   ({
@@ -18,3 +20,5 @@ export const logger_options = (stage: string, level: LoggerLevel) =>
     development: local_logger_options(level),
     test: test_logger_options()
   })[stage];
+
+export const create_logger = (stage: string, level: LoggerLevel): Logger => pino(logger_options(stage, level));

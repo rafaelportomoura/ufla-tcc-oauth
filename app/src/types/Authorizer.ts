@@ -1,4 +1,5 @@
 import { AwsConfig } from './Aws';
+import { Logger } from './Logger';
 
 export type Authorizer = {
   authorization: string;
@@ -35,4 +36,5 @@ export type AuthorizerArgs = {
   client_id: string;
   aws_config: AwsConfig;
   cognito_issuer: string;
+  logger: Logger;
 };

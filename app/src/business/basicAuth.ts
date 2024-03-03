@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-function */
 import { SecretsManager } from '../aws/secretsManager';
 import { CODE_MESSAGES } from '../constants/codeMessages';
-import { NotAuthorized } from '../exceptions/NotAuthorized';
+import { UnauthorizedError } from '../exceptions/Unauthorized';
 import { AwsConfig } from '../types/Aws';
 import { BasicAuth } from '../types/BasicAuth';
 
@@ -22,6 +22,6 @@ export class BasicAuthBusiness {
 
     const base64 = Buffer.from(auth_string).toString('base64');
 
-    if (base64 !== auth) throw new NotAuthorized(CODE_MESSAGES.INVALID_CREDENTIALS);
+    if (base64 !== auth) throw new UnauthorizedError(CODE_MESSAGES.INVALID_CREDENTIALS);
   }
 }
