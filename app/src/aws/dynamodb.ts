@@ -1,5 +1,8 @@
 import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import {
+  BatchGetCommand,
+  BatchGetCommandInput,
+  BatchGetCommandOutput,
   DeleteCommand,
   DeleteCommandInput,
   DeleteCommandOutput,
@@ -22,8 +25,8 @@ export class DynamoDB {
   private client: DynamoDBDocumentClient;
 
   constructor(
-    protected table: string,
-    config: DynamoDBClientConfig
+    config: DynamoDBClientConfig,
+    protected table: string
   ) {
     this.client = DynamoDBDocumentClient.from(new DynamoDBClient(config));
   }

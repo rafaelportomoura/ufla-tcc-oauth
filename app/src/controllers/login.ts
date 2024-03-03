@@ -1,9 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 import { Validator } from '../adapters/validate';
 import { LoginBusiness } from '../business/login';
-import { AWS_CONFIGURATION } from '../constants/aws';
+
+import { aws_config } from '../aws/config';
 import { CONFIGURATION } from '../constants/configuration';
-import { HTTP_STATUS_CODE } from '../constants/httpStatus';
 import { login_schema } from '../schemas/login';
 import { LoginResponse } from '../types/Login';
 
@@ -14,9 +15,9 @@ export async function login(req: FastifyRequest, res: FastifyReply): Promise<Log
     CONFIGURATION.KEY_ARN,
     CONFIGURATION.COGNITO_USER_POLL,
     CONFIGURATION.COGNITO_CLIENT_ID,
-    AWS_CONFIGURATION
+    aws_config()
   );
   const response = await business.login(body);
-  res.status(HTTP_STATUS_CODE.CREATED);
+  res.status(StatusCodes.CREATED);
   return response;
 }

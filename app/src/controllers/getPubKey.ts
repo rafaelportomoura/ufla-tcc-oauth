@@ -1,14 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 import { GetPubKey } from '../business/getPubKey';
-import { AWS_CONFIGURATION } from '../constants/aws';
+
+import { aws_config } from '../aws/config';
 import { CONFIGURATION } from '../constants/configuration';
-import { HTTP_STATUS_CODE } from '../constants/httpStatus';
 import { PubKey } from '../types/Kms';
 
 export async function getPubKey(_: FastifyRequest, res: FastifyReply): Promise<PubKey> {
-  const business = new GetPubKey(CONFIGURATION.KEY_ARN, AWS_CONFIGURATION);
+  const business = new GetPubKey(CONFIGURATION.KEY_ARN, aws_config());
   const response = await business.get();
-  res.status(HTTP_STATUS_CODE.OK);
+  res.status(StatusCodes.OK);
 
   return response;
 }

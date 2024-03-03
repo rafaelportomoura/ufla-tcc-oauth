@@ -16,5 +16,7 @@ export const CONFIGURATION = {
   EVENT_BUS: set_string_env('EVENT_BUS', 'event/bus'),
   COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', 'poonujh0ab394u5ktp0pdssds'),
   COGNITO_USER_POLL: set_string_env('COGNITO_USER_POLL', 'us-east-2_gBc9EI1X9'),
-  BASIC_AUTH_SECRET: set_string_env('BASIC_AUTH_SECRET', '')
+  BASIC_AUTH_SECRET: set_string_env('BASIC_AUTH_SECRET', ''),
+  GROUP_PERMISSIONS_TABLE: set_string_env('GROUP_PERMISSIONS', ''),
+  COGNITO_ISSUER: set_string_env('COGNITO_ISSUER', '')
 } as const;

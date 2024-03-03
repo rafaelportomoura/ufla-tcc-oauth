@@ -1,18 +1,18 @@
+import { StatusCodes } from 'http-status-codes';
 import { CodeMessage } from '../types/CodeMessage';
-import { HttpStatusCode } from '../types/HttpStatusCode';
 
 export class BaseError extends Error {
   name: string;
 
   message: string;
 
-  status: HttpStatusCode;
+  status: StatusCodes;
 
   code: string;
 
-  constructor({ code, message }: CodeMessage, status: HttpStatusCode) {
+  constructor({ code, message }: CodeMessage, status: StatusCodes) {
     super(message);
-    this.name = 'BaseError';
+    this.name = this.constructor.name;
     this.message = message;
     this.code = code;
     this.status = status;

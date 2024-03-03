@@ -13,10 +13,10 @@ Conditions:
     IsProdCondition: !Equals [!Ref Stage, "prod"]
 
 Resources:
-    Groups:
+    GroupsPermissions:
         Type: AWS::DynamoDB::Table
         Properties:
-            TableName: !Sub ${Stage}_${Tenant}_groups
+            TableName: !Sub ${Stage}_${Tenant}_groups_permissions
             AttributeDefinitions:
               - AttributeName: group
                 AttributeType: S
@@ -48,9 +48,10 @@ Resources:
             PointInTimeRecoverySpecification:
                 PointInTimeRecoveryEnabled: !If [IsProdCondition, true, false]
 
+
 Outputs:
     Groups:
-        Description: Groups
-        Value: !Ref Groups
+        Description: Groups Permissions Table
+        Value: !Ref GroupsPermissions
         Export:
-            Name: !Sub ${Stage}-${Tenant}-groups-table
+            Name: !Sub ${Stage}-${Tenant}-groups-permissions-table

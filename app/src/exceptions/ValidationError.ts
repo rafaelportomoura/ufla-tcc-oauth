@@ -8,7 +8,6 @@ export class ValidationError<T> extends BadRequestError {
   constructor(issues: z.ZodFormattedError<T, string>) {
     super(CODE_MESSAGES.VALIDATION_ERROR);
     this.issues = this.formatIssues(issues);
-    this.name = 'ValidationError';
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

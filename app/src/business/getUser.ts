@@ -1,5 +1,7 @@
 import { AdminGetUserResponse, AttributeType } from '@aws-sdk/client-cognito-identity-provider';
 import { Cognito } from '../aws/cognito';
+import { CODE_MESSAGES } from '../constants/codeMessages';
+import { NotFoundError } from '../exceptions/NotFoundError';
 import { AwsConfig } from '../types/Aws';
 import { User } from '../types/User';
 
@@ -12,6 +14,8 @@ export class GetUserBusiness {
 
   async getUser(username: string): Promise<User> {
     const user = await this.cognito.getUser(username);
+
+    if (!user) throw new NotFoundError(CODE_MESSAGES.USER_NOT_FOUND);
 
     return this.map(user);
   }

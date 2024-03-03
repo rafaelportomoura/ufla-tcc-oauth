@@ -1,50 +1,78 @@
 /* eslint-disable no-empty-function */
-import { jwtDecode } from 'jwt-decode';
-import { isEmpty } from 'lodash';
-import { Cognito } from '../aws/cognito';
-import { CODE_MESSAGES } from '../constants/codeMessages';
+import { match } from 'path-to-regexp';
 import { USER_COMMON_GROUPS } from '../constants/groups';
 import { ForbiddenError } from '../exceptions/ForbiddenError';
-import { NotFoundError } from '../exceptions/NotFoundError';
-import { Authorizer, AuthorizerResponse, DecodedToken } from '../types/Authorizer';
-import { AwsConfig } from '../types/Aws';
+import { GroupPermissionsRepository } from '../repositories/groupsPermissions';
+import { Authorizer, AuthorizerArgs, AuthorizerResponse } from '../types/Authorizer';
+import { GroupPermissions } from '../types/GroupPermissions';
+import { GetUserBusiness } from './getUser';
+import { ValidateToken } from './validateToken';
 
 export class AuthorizerBusiness {
-  private cognito: Cognito;
+  private get_user: GetUserBusiness;
 
-  constructor(pool_id: string, client_id: string, config: AwsConfig) {
-    this.cognito = new Cognito(pool_id, client_id, config);
+  private group_permissions: GroupPermissionsRepository;
+
+  private validate_token: ValidateToken;
+
+  constructor({ pool_id, client_id, aws_config, cognito_issuer }: AuthorizerArgs) {
+    this.get_user = new GetUserBusiness(pool_id, client_id, aws_config);
+    this.group_permissions = new GroupPermissionsRepository(aws_config);
+    this.validate_token = ValidateToken.creator({ cognito_issuer });
   }
 
-  async authorize(payload: Authorizer): Promise<AuthorizerResponse> {
-    const decoded = this.decodeToken(payload.authorization);
+  async authorize({ authorization, arn, path_parameters }: Authorizer): Promise<AuthorizerResponse> {
+    const decoded = await this.validate_token.verify(authorization);
 
     const { username } = decoded;
 
-    const is_endpoint_at_all_users_group = await this.verifyAllUsersGroup();
+    const permissions = await this.getGroupPermissions(username);
 
-    if (is_endpoint_at_all_users_group) return { is_authorized: true };
+    if (permissions.some(({ group }) => group === USER_COMMON_GROUPS.ADMIN)) return this.authorized(username);
 
-    const user = await this.cognito.getUser(username);
+    const path = arn.replace(/arn:aws:execute-api:[\w-]+:\d+:/g, '');
 
-    if (!user) throw new NotFoundError(CODE_MESSAGES.NOT_FOUND_ERROR);
+    for (const group_permission of permissions) {
+      const allowed = this.pathAllowed(group_permission, path, path_parameters);
+      if (allowed) return this.authorized(username);
+    }
 
-    if (!user.UserAttributes || isEmpty(user.UserAttributes)) throw new ForbiddenError();
+    return this.unauthorized(username);
+  }
 
-    const group = this.cognito.getGroup(user.UserAttributes);
+  async getGroupPermissions(username: string): Promise<GroupPermissions[]> {
+    const { 'custom:group': group } = await this.get_user.getUser(username);
 
-    if (group === USER_COMMON_GROUPS.ADMIN) return { is_authorized: true, context: { username } };
+    const permissions = await this.group_permissions.getPermissions(group);
 
+    return permissions;
+  }
+
+  pathAllowed(
+    { permission, same_user }: GroupPermissions,
+    path: string,
+    path_parameters: Authorizer['path_parameters']
+  ): boolean {
+    const permission_match = match(permission);
+
+    const match_response = permission_match(path);
+
+    if (!match_response) return false;
+
+    if (!same_user) return true;
+
+    const is_same_user = path_parameters.username === (match_response.params as Record<string, string>).username;
+
+    if (!is_same_user) throw new ForbiddenError();
+
+    return true;
+  }
+
+  authorized(username: string): AuthorizerResponse {
+    return { is_authorized: true, context: { username } };
+  }
+
+  unauthorized(username: string): AuthorizerResponse {
     return { is_authorized: false, context: { username } };
-  }
-
-  decodeToken(authorization: string): DecodedToken {
-    const decoded = jwtDecode<DecodedToken>(authorization);
-
-    return decoded;
-  }
-
-  async verifyAllUsersGroup(): Promise<boolean> {
-    return false;
   }
 }

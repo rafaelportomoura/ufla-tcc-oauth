@@ -16,7 +16,8 @@ import {
   ForgotPasswordCommandOutput,
   InitiateAuthCommand,
   InitiateAuthRequest,
-  InitiateAuthResponse
+  InitiateAuthResponse,
+  VerifySoftwareTokenCommand
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
@@ -132,5 +133,9 @@ export class Cognito {
     for (const v of user_attributes) attributes[v.Name as keyof UserAttributes] = v.Value;
 
     return attributes;
+  }
+
+  async validateToken() {
+    const command = new VerifySoftwareTokenCommand();
   }
 }
