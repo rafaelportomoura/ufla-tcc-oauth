@@ -69,7 +69,10 @@ Resources:
         Type: AWS::Logs::LogGroup
         Properties:
             LogGroupName: !Sub /aws/lambda/${Authorizer}
-            RetentionInDays: 1
+            RetentionInDays: !If
+              - isProd
+              - !Ref AWS::NoValue
+              - 1
             Tags:
               - Key: Service
                 Value: CloudWatch
