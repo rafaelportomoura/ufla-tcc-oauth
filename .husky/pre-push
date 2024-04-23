@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn concurrently -r "yarn test:cov" "cfn-lint stacks/*.yaml"
+yarn concurrently -r "pnpm run test:cov" "cfn-lint stacks/*.yaml"

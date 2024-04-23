@@ -11,6 +11,11 @@ Parameters:
         Type: String
     ListenerArn:
         Type: String
+    AuthorizerResultTtlInSeconds:
+        Type: Number
+        Default: 3600
+        MinValue: 1
+        MaxValue: 3600
 
 Conditions:
     isProd: !Equals [!Ref Stage, prod]
@@ -33,16 +38,74 @@ Resources:
                 append:header.microservice: !Ref Microservice
                 append:header.requestId: $context.requestId
                 overwrite:path: '$request.path'
+                append:header.stage: !Ref Stage
+                append:header.tenant: !Ref Tenant
 
-
-    Route:
+    GetPubKeyRoute:
         Type: AWS::ApiGatewayV2::Route
         Properties:
             ApiId: !Ref Api
-            RouteKey: $default
+            RouteKey: GET /keys/pub-key
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    GetUsersRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: GET /users/{username}
             Target: !Sub integrations/${Integration}
             AuthorizationType: CUSTOM
             AuthorizerId: !Ref Authorizer
+
+    CreateAdminRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /users/admins
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: CUSTOM
+            AuthorizerId: !Ref Authorizer
+
+    CreateSysAdminRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /users/admins/force
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    CreateCustomerRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /users/customers
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    LoginRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /oauth/login
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    ForgotPasswordRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /oauth/forgot-password
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+    ConfirmForgotPasswordRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /oauth/confirm-forgot-password
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
 
     RouteOptions:
         Type: AWS::ApiGatewayV2::Route
@@ -90,7 +153,6 @@ Resources:
             Stage: !Ref ApiStage
 
     ApiDeployment:
-        DependsOn: Route
         Type: AWS::ApiGatewayV2::Deployment
         Properties:
             ApiId: !Ref Api
@@ -132,13 +194,13 @@ Resources:
             Name: LambdaAuthorizer
             ApiId: !Ref Api
             AuthorizerType: REQUEST
-            AuthorizerUri: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-authorizer-uri"}
-            AuthorizerPayloadFormatVersion: '2.0'
-            AuthorizerResultTtlInSeconds: 0
+            AuthorizerUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Stage}-${Tenant}-${Microservice}-authorizer/invocations
+            AuthorizerPayloadFormatVersion: '1.0'
+            AuthorizerResultTtlInSeconds: !Ref AuthorizerResultTtlInSeconds
             IdentitySource:
               - $request.header.Authorization
-
-
+              - $context.routeKey
+        
     LambdaPermission:
         Type: AWS::Lambda::Permission
         Properties:

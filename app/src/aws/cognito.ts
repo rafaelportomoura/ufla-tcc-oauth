@@ -19,7 +19,7 @@ import {
   InitiateAuthResponse
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
-import { CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
+import { CognitoAccessTokenPayload, CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
 import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { UnauthorizedError } from '../exceptions/Unauthorized';
@@ -145,7 +145,7 @@ export class Cognito {
     return attributes;
   }
 
-  async verify<T extends CognitoJwtPayload = CognitoJwtPayload>(jwt: string): Promise<T> {
+  async verify<T extends CognitoJwtPayload = CognitoAccessTokenPayload>(jwt: string): Promise<T> {
     try {
       const payload = await this.verifier.verify(jwt);
       return payload as T;
