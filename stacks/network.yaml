@@ -176,6 +176,16 @@ Resources:
             Stage: !Ref ApiStage
 
     ApiDeployment:
+        DependsOn:
+             - GetPubKeyRoute
+             - GetUsersRoute
+             - CreateAdminRoute
+             - CreateSysAdminRoute
+             - CreateCustomerRoute
+             - LoginRoute
+             - ForgotPasswordRoute
+             - ConfirmForgotPasswordRoute  
+             - RouteOptions  
         Type: AWS::ApiGatewayV2::Deployment
         Properties:
             ApiId: !Ref Api
