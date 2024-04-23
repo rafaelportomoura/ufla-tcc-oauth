@@ -24,6 +24,7 @@ args = get_args(
             "required": False,
             "default": 300,
         },
+        "log_level_compute": {"type": "str", "required": False, "default": "debug"},
     }
 )
 
@@ -74,7 +75,7 @@ API_GATEWAY_STACK = api.stack(
     base_path="oauth",
     listener_arn=listener_arn,
     authorizer_result_ttl_in_seconds=args["authorizer_result_ttl_in_seconds"],
-    log_level=log_level,
+    log_level=args["log_level_compute"],
 )
 
 if not cloudformation.stack_is_succesfully_deployed(stack_name=API_GATEWAY_STACK["stack_name"]):
@@ -93,7 +94,7 @@ ECS_STACK = ecs.stack(
     stage=stage,
     tenant=tenant,
     microservice=microservice,
-    log_level=log_level,
+    log_level=args["log_level_compute"],
     key_arn=key_arn,
     min_container=args["min_container"],
     max_container=args["max_container"],
