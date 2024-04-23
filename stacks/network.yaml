@@ -1,6 +1,5 @@
-
-Transform: AWS::Serverless-2016-10-31
 AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
 
 Parameters:
     Stage:
@@ -283,7 +282,7 @@ Resources:
         Properties:
             MeshName:
                 Fn::ImportValue: !Sub ${Stage}-${Tenant}-app-mesh-name
-            VirtualNodeName: !Sub "${Microservice}-virtual-node"
+            VirtualNodeName: !Ref Microservice
             Spec:
                 Listeners:
                   - PortMapping:
