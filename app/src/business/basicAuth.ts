@@ -2,17 +2,16 @@
 import { SecretsManager } from '../aws/secretsManager';
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { UnauthorizedError } from '../exceptions/Unauthorized';
-import { AwsConfig } from '../types/Aws';
-import { BasicAuth } from '../types/BasicAuth';
+import { BasicAuth, BasicAuthArgs } from '../types/BasicAuth';
 
 export class BasicAuthBusiness {
   private secret_manager: SecretsManager;
 
-  constructor(
-    private secret_path: string,
-    config: AwsConfig
-  ) {
-    this.secret_manager = new SecretsManager(config);
+  private secret_path: string;
+
+  constructor(args: BasicAuthArgs) {
+    this.secret_manager = args.secret;
+    this.secret_path = args.secret_path;
   }
 
   async validate(auth: string): Promise<void> {

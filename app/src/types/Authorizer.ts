@@ -1,3 +1,5 @@
+import { Cognito } from '../aws/cognito';
+
 export type DecodedToken = {
   sub: string;
   iss: string;
@@ -11,4 +13,8 @@ export type DecodedToken = {
   iat: number;
   jti: string;
   username: string;
+};
+
+export type AuthorizerArgs = {
+  cognito: Cognito;
 };

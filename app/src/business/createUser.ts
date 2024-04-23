@@ -1,9 +1,9 @@
-import { KMS } from '../aws/kms';
-import { CreateUser, SetUserPasswordCognito, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
+import { KMS } from '../aws/kms';
 import { cognitoErrorHandler } from '../exceptions/cognitoErrorHandler';
-import { AwsConfig } from '../types/Aws';
+import { CreateUserArgs } from '../types/CreateUserArgs';
+import { CreateUser, SetUserPasswordCognito, UserGroup } from '../types/User';
 
 export class CreateUserBusiness {
   private group: UserGroup;
@@ -12,10 +12,10 @@ export class CreateUserBusiness {
 
   private cognito: Cognito;
 
-  constructor(group: UserGroup, key_arn: string, pool_id: string, client_id: string, config: AwsConfig) {
-    this.group = group;
-    this.kms = new KMS(key_arn, config);
-    this.cognito = new Cognito(pool_id, client_id, config);
+  constructor(args: CreateUserArgs) {
+    this.group = args.group;
+    this.kms = args.kms;
+    this.cognito = args.cognito;
   }
 
   async create(payload: CreateUser): Promise<void> {

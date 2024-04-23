@@ -18,20 +18,31 @@ import {
   InitiateAuthRequest,
   InitiateAuthResponse
 } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
 import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
-import { ConfirmForgotPassword } from '../types/ForgotPassword';
-import { Login } from '../types/Login';
+import { UnauthorizedError } from '../exceptions/Unauthorized';
+import { ConfirmForgotPasswordRequest, LoginRequest } from '../types/Cognito';
 
 export class Cognito {
   private client: CognitoIdentityProviderClient;
 
+  private verifier: ReturnType<typeof CognitoJwtVerifier.create>;
+
   constructor(
     private pool_id: string,
     private client_id: string,
+    scope: string,
     config: CognitoIdentityProviderClientConfig
   ) {
     this.client = new CognitoIdentityProviderClient(config);
+    this.verifier = CognitoJwtVerifier.create({
+      userPoolId: pool_id,
+      tokenUse: 'access',
+      clientId: client_id,
+      scope
+    });
   }
 
   createUser(payload: CreateUser, group: UserGroup): Promise<AdminCreateUserResponse> {
@@ -83,7 +94,7 @@ export class Cognito {
     return this.client.send(command) as Promise<Required<AdminGetUserResponse>>;
   }
 
-  login({ username, password }: Login): Promise<InitiateAuthResponse> {
+  login({ username, password }: LoginRequest): Promise<InitiateAuthResponse> {
     const input: InitiateAuthRequest = {
       AuthFlow: 'USER_PASSWORD_AUTH',
       ClientId: this.client_id,
@@ -108,7 +119,7 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  confirmForgotPassword(payload: ConfirmForgotPassword): Promise<ConfirmForgotPasswordCommandOutput> {
+  confirmForgotPassword(payload: ConfirmForgotPasswordRequest): Promise<ConfirmForgotPasswordCommandOutput> {
     const command = new ConfirmForgotPasswordCommand({
       ClientId: this.client_id,
       Username: payload.username,
@@ -132,5 +143,14 @@ export class Cognito {
     for (const v of user_attributes) attributes[v.Name as keyof UserAttributes] = v.Value;
 
     return attributes;
+  }
+
+  async verify<T extends CognitoJwtPayload = CognitoJwtPayload>(jwt: string): Promise<T> {
+    try {
+      const payload = await this.verifier.verify(jwt);
+      return payload as T;
+    } catch {
+      throw new UnauthorizedError();
+    }
   }
 }

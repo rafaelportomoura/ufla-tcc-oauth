@@ -2,14 +2,13 @@ import { CODE_MESSAGES } from '../constants/codeMessages';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
 import { BadRequestError } from '../exceptions/BadRequestError';
-import { AwsConfig } from '../types/Aws';
-import { ForgotPassword } from '../types/ForgotPassword';
+import { ForgotPassword, ForgotPasswordArgs } from '../types/ForgotPassword';
 
 export class ForgotPasswordBusiness {
   private cognito: Cognito;
 
-  constructor(pool_id: string, client_id: string, config: AwsConfig) {
-    this.cognito = new Cognito(pool_id, client_id, config);
+  constructor(args: ForgotPasswordArgs) {
+    this.cognito = args.cognito;
   }
 
   async forgot({ username }: ForgotPassword): Promise<void> {

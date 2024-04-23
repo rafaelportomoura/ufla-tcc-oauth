@@ -10,11 +10,11 @@ export const CONFIGURATION = {
   REGION: set_string_env('REGION', 'us-east-2'),
   MICROSERVICE: set_string_env('MICROSERVICE', 'oauth'),
   LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', 'trace'),
-  PORT: set_number_env('PORT', 80),
+  PORT: set_number_env('PORT', 3000),
   KEY_ARN: set_string_env('KEY_ARN', ''),
   COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', ''),
   COGNITO_USER_POLL: set_string_env('COGNITO_USER_POLL', ''),
   BASIC_AUTH_SECRET: set_string_env('BASIC_AUTH_SECRET', ''),
   GROUP_PERMISSIONS_TABLE: set_string_env('GROUP_PERMISSIONS', ''),
-  COGNITO_ISSUER: set_string_env('COGNITO_ISSUER', '')
+  COGNITO_SCOPE: set_string_env('COGNITO_SCOPE', '')
 } as const;

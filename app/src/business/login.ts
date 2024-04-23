@@ -2,17 +2,16 @@ import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provi
 import { KMS } from '../aws/kms';
 /* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
-import { AwsConfig } from '../types/Aws';
-import { Login, LoginResponse } from '../types/Login';
+import { Login, LoginArgs, LoginResponse } from '../types/Login';
 
 export class LoginBusiness {
   private kms: KMS;
 
   private cognito: Cognito;
 
-  constructor(key_arn: string, pool_id: string, client_id: string, config: AwsConfig) {
-    this.kms = new KMS(key_arn, config);
-    this.cognito = new Cognito(pool_id, client_id, config);
+  constructor(args: LoginArgs) {
+    this.kms = args.kms;
+    this.cognito = args.cognito;
   }
 
   async login({ username, password: encrypted_password }: Login): Promise<LoginResponse> {

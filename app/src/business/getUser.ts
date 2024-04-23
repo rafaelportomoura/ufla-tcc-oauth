@@ -2,14 +2,14 @@ import { AdminGetUserResponse, AttributeType } from '@aws-sdk/client-cognito-ide
 import { Cognito } from '../aws/cognito';
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { NotFoundError } from '../exceptions/NotFoundError';
-import { AwsConfig } from '../types/Aws';
+import { GetUserArgs } from '../types/GetUser';
 import { User } from '../types/User';
 
 export class GetUserBusiness {
   private cognito: Cognito;
 
-  constructor(pool_id: string, client_id: string, aws_config: AwsConfig) {
-    this.cognito = new Cognito(pool_id, client_id, aws_config);
+  constructor(args: GetUserArgs) {
+    this.cognito = args.cognito;
   }
 
   async getUser(username: string): Promise<User> {
