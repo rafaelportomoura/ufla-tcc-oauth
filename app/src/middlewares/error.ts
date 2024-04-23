@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 import { CODE_MESSAGES } from '../constants/codeMessages';
-import { HTTP_STATUS_CODE } from '../constants/httpStatus';
 import { BaseError } from '../exceptions/BaseError';
 import { InternalServerError } from '../exceptions/InternalServerError';
 
@@ -13,7 +13,5 @@ export const error_middleware =
       return;
     }
 
-    reply
-      .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
-      .send(new InternalServerError(CODE_MESSAGES.INTERNAL_SERVER_ERROR));
+    reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send(new InternalServerError(CODE_MESSAGES.INTERNAL_SERVER_ERROR));
   };

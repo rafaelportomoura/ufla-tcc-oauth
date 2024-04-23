@@ -1,9 +1,9 @@
 import FastifyCors from '@fastify/cors';
 import Fastify from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 
 import { logger_options } from '../adapters/logger';
 import { CONFIGURATION } from '../constants/configuration';
-import { HTTP_STATUS_CODE } from '../constants/httpStatus';
 import { error_middleware } from '../middlewares/error';
 import { router } from '../routes';
 
@@ -18,7 +18,7 @@ import { router } from '../routes';
   });
   server.setErrorHandler(error_middleware(server));
 
-  server.get('/health-check', (_, res) => res.status(HTTP_STATUS_CODE.OK).send('alive'));
+  server.get('/health-check', (_, res) => res.status(StatusCodes.OK).send('alive'));
 
   await server.register(router, { prefix: '/v1' });
 

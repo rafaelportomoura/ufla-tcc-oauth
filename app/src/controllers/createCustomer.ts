@@ -14,12 +14,10 @@ export async function createCustomer(req: FastifyRequest, res: FastifyReply): Pr
   const validator = new Validator(create_user_schema);
   const body = await validator.validate(req.body);
   const business = new CreateUserBusiness(
-    req.log,
     USER_COMMON_GROUPS.CUSTOMER,
     CONFIGURATION.KEY_ARN,
     CONFIGURATION.COGNITO_USER_POLL,
     CONFIGURATION.COGNITO_CLIENT_ID,
-    CONFIGURATION.EVENT_BUS,
     aws_config()
   );
 

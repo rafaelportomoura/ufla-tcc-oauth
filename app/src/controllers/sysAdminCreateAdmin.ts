@@ -18,12 +18,10 @@ export async function sysAdminCreateAdmin(req: FastifyRequest, res: FastifyReply
   const validator = new Validator(create_user_schema);
   const body = await validator.validate(req.body);
   const business = new CreateUserBusiness(
-    req.log,
     USER_COMMON_GROUPS.ADMIN,
     CONFIGURATION.KEY_ARN,
     CONFIGURATION.COGNITO_USER_POLL,
     CONFIGURATION.COGNITO_CLIENT_ID,
-    CONFIGURATION.EVENT_BUS,
     aws_config()
   );
   await business.create(body);
