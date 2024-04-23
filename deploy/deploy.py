@@ -85,7 +85,7 @@ if not cloudformation.stack_is_succesfully_deployed(stack_name=API_GATEWAY_STACK
 # 🚀 ECS
 ################################################
 exports = cloudformation.list_exports()
-key_arn = cloudformation.get_export_value(exports=exports, name="encrypt-key-arn")
+key_arn = cloudformation.get_export_value(exports=exports, name=f"{stage}-{tenant}-encrypt-key-arn")
 target = cloudformation.get_export_value(
     exports=exports, name=f"{stage}-{tenant}-{microservice}-target-group-arn"
 )
