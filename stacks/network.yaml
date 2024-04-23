@@ -268,9 +268,6 @@ Resources:
         Properties:
             Name: !Ref Microservice
             NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
-            HealthCheckConfig:
-                Type: HTTP
-                ResourcePath: /health-check
             DnsConfig:
                 DnsRecords:
                   - Type: A
