@@ -3,7 +3,7 @@ from scripts.stacks import Stack, stack_name
 
 
 def my_stack_name(stage: str, tenant: str) -> str:
-    return stack_name(stage=stage, tenant=tenant, name="OAuth-Network")
+    return stack_name(stage=stage, tenant=tenant, name="OAuth-Api")
 
 
 def stack(
