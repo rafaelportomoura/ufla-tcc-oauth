@@ -312,6 +312,30 @@ Resources:
     # ---------------------------------------------
     # LOAD BALANCER
     # ---------------------------------------------
+    ListenerRule:
+      Type: "AWS::ElasticLoadBalancingV2::ListenerRule"
+      Properties:
+        ListenerArn: {"Fn::ImportValue": !Sub "${Stage}-${Tenant}-application-load-balancer-listener-arn"}
+        Priority: 100
+        Actions:
+          - Type: forward
+            TargetGroupArn: !Ref TargetGroup
+        Conditions:
+          - Field: http-header
+            HttpHeaderConfig:
+              HttpHeaderName: microservice
+              Values:
+                - !Ref Microservice
+          - Field: http-header
+            HttpHeaderConfig:
+              HttpHeaderName: stage
+              Values:
+                - !Ref Stage
+          - Field: http-header
+            HttpHeaderConfig:
+              HttpHeaderName: tenant
+              Values:
+                - !Ref Tenant
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
