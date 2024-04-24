@@ -20,7 +20,7 @@ import { router } from '../routes';
 
   server.get('/health-check', (_, res) => res.status(StatusCodes.OK).send('alive'));
 
-  await server.register(router, { prefix: '/v1' });
+  await server.register(router);
 
   server.listen(
     {
