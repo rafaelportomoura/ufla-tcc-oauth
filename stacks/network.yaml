@@ -355,7 +355,7 @@ Resources:
     LambdaAuthorizer:
         Type: AWS::Serverless::Function
         Properties:
-            FunctionName: !Sub ${Stage}-${Tenant}-${Microservice}-authorizer-1
+            FunctionName: !Sub ${Stage}-${Tenant}-${Microservice}-authorizer
             Role: !GetAtt LambdaRole.Arn
             CodeUri: ./../dist/handlers
             Handler: authorizer.authorizer
