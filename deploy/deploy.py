@@ -104,3 +104,5 @@ ECS_STACK = ecs.stack(
     cpu_utilization=args["cpu_utilization"],
     target_group=target,
 )
+
+cloudformation.deploy_stack(stack=ECS_STACK)
