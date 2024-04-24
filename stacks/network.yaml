@@ -326,16 +326,7 @@ Resources:
               HttpHeaderName: microservice
               Values:
                 - !Ref Microservice
-          - Field: http-header
-            HttpHeaderConfig:
-              HttpHeaderName: stage
-              Values:
-                - !Ref Stage
-          - Field: http-header
-            HttpHeaderConfig:
-              HttpHeaderName: tenant
-              Values:
-                - !Ref Tenant
+                
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
