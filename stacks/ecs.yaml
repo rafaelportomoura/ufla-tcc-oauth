@@ -277,7 +277,7 @@ Resources:
                     Value: !Sub
                       - "mesh/${AppMeshName}/virtualNode/${VirtualNodeName}"
                       - AppMeshName: {'Fn::ImportValue': !Sub '${Stage}-${Tenant}-app-mesh-name'}
-                        VirtualNodeName: {'Fn::ImportValue': !Sub '${Stage}-${Tenant}-${Microservice}-virtual-node-name'}
+                        VirtualNodeName: !Ref Microservice
                   - Name: AWS_REGION
                     Value: !Ref AWS::Region
                 User: 1337
