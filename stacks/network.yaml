@@ -200,26 +200,16 @@ Resources:
             AccessLogSettings:
                 DestinationArn: !GetAtt LogGroup.Arn
                 Format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId $context.integrationErrorMessage'
-
             Tags:
-              - Key: Service
-                Value: ApiGatewayV2
-              - Key: Resource
-                Value: Stage
-              - Key: Name
-                Value: !Sub ${Stage}-${Tenant}-${Microservice}-api-stage
-              - Key: StackName
-                Value: !Ref AWS::StackName
-              - Key: StackId
-                Value: !Ref AWS::StackId
-              - Key: Region
-                Value: !Ref AWS::Region
-              - Key: Microservice
-                Value: !Ref Microservice
-              - Key: Stage
-                Value: !Ref Stage
-              - Key: Tenant
-                Value: !Ref Tenant
+                Service: ApiGatewayV2
+                Resource: Stage
+                Name: !Ref Stage
+                StackName: !Ref AWS::StackName
+                StackId: !Ref AWS::StackId
+                Region: !Ref AWS::Region
+                Microservice: !Ref Microservice
+                Stage: !Ref Stage
+                Tenant: !Ref Tenant
 
     Authorizer:
         Type: AWS::ApiGatewayV2::Authorizer
