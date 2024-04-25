@@ -261,7 +261,7 @@ Resources:
                     Value: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-user-pool-client"}
                   - Name: KEY_ARN
                     Value: !Ref KeyArn
-                  - Name: BASE_AUTH_SECRET
+                  - Name: BASIC_AUTH_SECRET
                     Value: !GetAtt BaseAuthSecretManager.Id
 
                 Image: !Sub 
