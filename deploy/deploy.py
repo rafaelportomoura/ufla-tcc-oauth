@@ -115,7 +115,7 @@ stack_resources = cloudformation.describe_stack_resources(stack_name=ECS_STACK["
 print(stack_resources)
 for resource in stack_resources["StackResources"]:
     if resource["LogicalResourceId"] == "Service":
-        service = stack_resources["PhysicalResourceId"]
+        service = resource["PhysicalResourceId"]
         break
 
 ecs.force_new_deployment(cluster=f"{stage}-{tenant}-{microservice}-cluster",service=service)
