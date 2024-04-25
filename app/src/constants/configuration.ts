@@ -15,5 +15,5 @@ export const CONFIGURATION = {
   COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', ''),
   COGNITO_USER_POLL: set_string_env('COGNITO_USER_POOL', ''),
   BASIC_AUTH_SECRET: set_string_env('BASIC_AUTH_SECRET', ''),
-  COGNITO_SCOPE: set_string_env('COGNITO_SCOPE', '')
+  COGNITO_SCOPE: set_string_env('COGNITO_SCOPE', 'aws.cognito.signin.user.admin')
 } as const;
