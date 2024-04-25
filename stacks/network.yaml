@@ -175,26 +175,10 @@ Resources:
             DomainName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-domain-name"}
             Stage: !Ref ApiStage
 
-    ApiDeployment:
-        DependsOn:
-             - GetPubKeyRoute
-             - GetUsersRoute
-             - CreateAdminRoute
-             - CreateSysAdminRoute
-             - CreateCustomerRoute
-             - LoginRoute
-             - ForgotPasswordRoute
-             - ConfirmForgotPasswordRoute  
-             - RouteOptions  
-        Type: AWS::ApiGatewayV2::Deployment
-        Properties:
-            ApiId: !Ref Api
-
     ApiStage:
         Type: AWS::ApiGatewayV2::Stage
         Properties:
             ApiId: !Ref Api
-            DeploymentId: !Ref ApiDeployment
             StageName: !Ref Stage
             AutoDeploy: true
             AccessLogSettings:
