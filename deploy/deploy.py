@@ -111,5 +111,6 @@ ecs = ECS(profile=profile, region=region, log_level=log_level)
 if not cloudformation.stack_is_succesfully_deployed(stack_name=ECS_STACK["stack_name"]):
     raise DeployException(stack=ECS_STACK)
 
-
-ecs.force_new_deployment(cluster=f"{stage}-{tenant}-{microservice}-cluster",service=f"{stage}-{tenant}-{microservice}-service")
+stack_resources = cloudformation.describe_stack_resources(stack_name=ECS_STACK["stack_name"])
+service = stack_resources["Service"]["LogicalResourceId"]
+ecs.force_new_deployment(cluster=f"{stage}-{tenant}-{microservice}-cluster",service=service)
