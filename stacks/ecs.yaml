@@ -39,6 +39,9 @@ Parameters:
     TargetGroupArn:
         Type: String
         Description: Target Group Arn
+    ImageTag: 
+        Type: String
+        Default: latest
 Conditions:
     isProd: !Equals [!Ref Stage, prod]
 
@@ -261,7 +264,10 @@ Resources:
                   - Name: BASE_AUTH_SECRET
                     Value: !GetAtt BaseAuthSecretManager.Id
 
-                Image: {"Fn::ImportValue": !Sub "${Stage}-${Tenant}-${Microservice}-ecr-repository-uri"}
+                Image: !Sub 
+                  - "${uri}:${tag}"
+                  - uri: {"Fn::ImportValue": !Sub "${Stage}-${Tenant}-${Microservice}-ecr-repository-uri"}
+                    tag: !Ref ImageTag
                 LogConfiguration:
                     LogDriver: awslogs
                     Options:
