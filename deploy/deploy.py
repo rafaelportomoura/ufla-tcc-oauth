@@ -113,5 +113,9 @@ if not cloudformation.stack_is_succesfully_deployed(stack_name=ECS_STACK["stack_
 
 stack_resources = cloudformation.describe_stack_resources(stack_name=ECS_STACK["stack_name"])
 print(stack_resources)
-service = stack_resources["Service"]["PhysicalResourceId"]
+for resource in stack_resources:
+    if resource["LogicalResourceId"] == "Service":
+        service = stack_resources["Service"]["PhysicalResourceId"]
+        break
+
 ecs.force_new_deployment(cluster=f"{stage}-{tenant}-{microservice}-cluster",service=service)
