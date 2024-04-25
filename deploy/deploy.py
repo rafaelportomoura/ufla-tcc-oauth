@@ -4,6 +4,7 @@ from scripts.args import get_args
 from stacks import ecs, ecr, api, cognito
 from scripts.exception import DeployException
 from scripts.docker import Docker
+from scripts.ecs import ECS
 
 args = get_args(
     {
@@ -106,3 +107,9 @@ ECS_STACK = ecs.stack(
 )
 
 cloudformation.deploy_stack(stack=ECS_STACK)
+ecs = ECS(profile=profile, region=region, log_level=log_level)
+if not cloudformation.stack_is_succesfully_deployed(stack_name=ECS_STACK["stack_name"]):
+    raise DeployException(stack=ECS_STACK)
+
+
+ecs.force_new_deployment(cluster=f"{stage}-{tenant}-{microservice}-cluster",service=f"{stage}-{tenant}-{microservice}-service")
