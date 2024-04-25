@@ -326,7 +326,7 @@ Resources:
               HttpHeaderName: microservice
               Values:
                 - !Ref Microservice
-                
+
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
@@ -335,6 +335,8 @@ Resources:
             Port: 80
             Protocol: HTTP
             TargetType: ip
+            UnhealthyThresholdCount: 10
+            HealthCheckIntervalSeconds: 300
             VpcId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-vpc-id"}
             Tags:
               - Key: Service
