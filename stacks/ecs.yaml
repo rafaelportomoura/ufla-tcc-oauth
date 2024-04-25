@@ -237,7 +237,7 @@ Resources:
             ContainerDefinitions:
               - Name: !Sub ${Stage}-${Tenant}-${Microservice}-http
                 PortMappings:
-                  - ContainerPort: 80
+                  - ContainerPort: 3000
                     HostPort: 80
                     Protocol: tcp
                 Environment:
@@ -254,7 +254,7 @@ Resources:
                   - Name: MICROSERVICE
                     Value: !Ref Microservice
                   - Name: PORT
-                    Value: 80
+                    Value: 3000
                   - Name: COGNITO_USER_POOL
                     Value: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-user-pool-id"}
                   - Name: COGNITO_CLIENT_ID
