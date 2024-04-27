@@ -3,7 +3,6 @@ import Fastify from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 
 import { CONFIGURATION } from '../constants/configuration';
-import { error_middleware } from '../middlewares/error';
 import { router } from '../routes';
 
 (async () => {
@@ -17,7 +16,6 @@ import { router } from '../routes';
     allowedHeaders: '*',
     methods: '*'
   });
-  server.setErrorHandler(error_middleware(server));
 
   server.get('/health-check', (_, res) => res.status(StatusCodes.OK).send('alive'));
 
