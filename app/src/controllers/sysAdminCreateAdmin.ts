@@ -18,7 +18,8 @@ export async function sysAdminCreateAdmin(req: FastifyRequest, res: FastifyReply
   const auth_string = req.headers.authorization?.split(' ')[1];
   const basic_auth_business = new BasicAuthBusiness({
     secret: new SecretsManager(aws_config()),
-    secret_path: CONFIGURATION.BASIC_AUTH_SECRET
+    secret_path: CONFIGURATION.BASIC_AUTH_SECRET,
+    logger: req.log
   });
   await basic_auth_business.validate(auth_string as string);
   const validator = new Validator(create_user_schema);
