@@ -13,7 +13,6 @@ export async function getUser(
   res: FastifyReply
 ): ReturnType<typeof GetUserBusiness.prototype.getUser> {
   const validator = new Validator(get_user_schema);
-  req.log.info(req.params, 'tnc');
   const { username } = await validator.validate(req.params);
   const business = new GetUserBusiness({
     cognito: new Cognito(

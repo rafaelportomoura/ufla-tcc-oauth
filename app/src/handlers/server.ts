@@ -2,15 +2,12 @@ import FastifyCors from '@fastify/cors';
 import Fastify from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 
-import { logger_options } from '../adapters/logger';
 import { CONFIGURATION } from '../constants/configuration';
 import { error_middleware } from '../middlewares/error';
 import { router } from '../routes';
 
 (async () => {
-  const server = Fastify({
-    logger: logger_options(CONFIGURATION.STAGE, CONFIGURATION.LOG_LEVEL)
-  });
+  const server = Fastify();
   await server.register(FastifyCors, {
     origin: '*',
     allowedHeaders: '*',
