@@ -348,8 +348,8 @@ Resources:
         Properties:
             FunctionName: !Sub ${Stage}-${Tenant}-${Microservice}-authorizer
             Role: !GetAtt LambdaRole.Arn
-            CodeUri: ./../dist/handlers
-            Handler: authorizer.authorizer
+            CodeUri: ./..
+            Handler: dist/handlers/authorizer.authorizer
             VpcConfig:
                 SubnetIds: !Split [',', {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-private-subnets-list"}]
                 SecurityGroupIds:
@@ -367,10 +367,6 @@ Resources:
             Environment:
                 Variables:
                     LOG_LEVEL: !Ref LogLevel
-                    COGNITO_ISSUER: !Sub
-                      - https://cognito-idp.${region}.amazonaws.com/${userPoolId}
-                      - region: !Ref AWS::Region
-                        userPoolId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-user-pool-id"}
                     COGNITO_USER_POOL: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-user-pool-id"}
                     COGNITO_CLIENT_ID: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-user-pool-client"}
             Tracing: PassThrough
