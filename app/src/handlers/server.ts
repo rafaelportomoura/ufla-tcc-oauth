@@ -7,7 +7,11 @@ import { error_middleware } from '../middlewares/error';
 import { router } from '../routes';
 
 (async () => {
-  const server = Fastify();
+  const server = Fastify({
+    logger: {
+      level: 'silent'
+    }
+  });
   await server.register(FastifyCors, {
     origin: '*',
     allowedHeaders: '*',

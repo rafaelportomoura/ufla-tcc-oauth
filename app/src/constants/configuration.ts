@@ -1,6 +1,6 @@
 import { LoggerLevel } from './loggerLevel';
 
-const set_env = <T = string>(key: string, default_value: T): T => (process.env[key] || default_value) as T;
+const set_env = <T = string>(key: string, default_value: T): T => (process.env[key] ?? default_value) as T;
 const set_number_env = (key: string, default_value: number) => Number(set_env(key, default_value));
 const set_string_env = (key: string, default_value: unknown) => String(set_env(key, default_value));
 
