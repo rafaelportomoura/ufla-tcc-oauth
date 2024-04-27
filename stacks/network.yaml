@@ -348,7 +348,7 @@ Resources:
         Properties:
             FunctionName: !Sub ${Stage}-${Tenant}-${Microservice}-authorizer
             Role: !GetAtt LambdaRole.Arn
-            CodeUri: ./..
+            CodeUri: ./
             Handler: dist/handlers/authorizer.authorizer
             VpcConfig:
                 SubnetIds: !Split [',', {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-private-subnets-list"}]
