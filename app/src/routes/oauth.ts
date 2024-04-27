@@ -3,10 +3,12 @@ import { FastifyInstance, FastifyPluginOptions, FastifyRegisterOptions } from 'f
 import { confirmForgotPassword } from '../controllers/confirmForgotPassword';
 import { forgotPassword } from '../controllers/forgotPassword';
 import { login } from '../controllers/login';
+import { validateTokenController } from '../controllers/token';
 
 export function oauth(server: FastifyInstance, _: FastifyRegisterOptions<FastifyPluginOptions>, done: () => void) {
   server.post('/login', login);
   server.post('/forgot-password', forgotPassword);
-  server.post('/confirm-forgot-password', confirmForgotPassword);
+  server.post('/reset-password', confirmForgotPassword);
+  server.post('/validate-token', validateTokenController);
   done();
 }
