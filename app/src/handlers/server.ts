@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import FastifyCors from '@fastify/cors';
 import Fastify from 'fastify';
 import { StatusCodes } from 'http-status-codes';
@@ -28,11 +29,11 @@ import { router } from '../routes';
     },
     (err, addr) => {
       if (err) {
-        server.log.error(err);
+        console.error(err);
         process.exit(1);
       }
 
-      server.log.info(`RUNNING ON PORT ${addr}`);
+      console.info(`RUNNING ON PORT ${addr}`);
     }
   );
 })();

@@ -1,0 +1,1 @@
+aws --profile tcc --region us-east-2 kms encrypt --key-id $1 --plaintext 'MTIzNDU2Nzg5QWJjZCE=' --encryption-algorithm "RSAES_OAEP_SHA_256" --output text --query CiphertextBlob > PASSWORD.txt
