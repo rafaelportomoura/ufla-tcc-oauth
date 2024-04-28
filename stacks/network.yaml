@@ -247,6 +247,14 @@ Resources:
     # -----------------------------------------
     # APP MESH
     # -----------------------------------------
+    ServiceDiscoveryInstance:
+        Type: AWS::ServiceDiscovery::Instance
+        Properties:
+            InstanceAttributes: 
+                AWS_INSTANCE_IPV4: "192.0.2.44"
+                AWS_INSTANCE_PORT: 80
+            ServiceId: {"Fn::ImportValue": !Sub "${Stage}-${Tenant}-cloud-map-service-id"}
+
     VirtualNode:
         Type: AWS::AppMesh::VirtualNode
         Properties:
