@@ -247,17 +247,6 @@ Resources:
     # -----------------------------------------
     # APP MESH
     # -----------------------------------------
-    CloudMapService:
-        Type: AWS::ServiceDiscovery::Service
-        Properties:
-            Name: !Ref Microservice
-            NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
-            DnsConfig:
-                DnsRecords:
-                  - Type: A
-                    TTL: 60
-                RoutingPolicy: MULTIVALUE
-
     VirtualNode:
         Type: AWS::AppMesh::VirtualNode
         Properties:
