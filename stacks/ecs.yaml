@@ -49,10 +49,10 @@ Resources:
     # -----------------------------------------------
     # SECRET MANAGER
     # -----------------------------------------------
-    BaseAuthSecretManager:
+    BasicAuthSecretManager:
         Type: AWS::SecretsManager::Secret
         Properties:
-            Name: !Sub ${Stage}-${Tenant}-${Microservice}-base-auth
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}-basic-auth
             GenerateSecretString:
                 SecretStringTemplate: !Sub '{"username": "${Microservice}"}'
                 GenerateStringKey: "password"
@@ -68,7 +68,7 @@ Resources:
               - Key: StackId
                 Value: !Ref AWS::StackId
               - Key: Name
-                Value: !Sub ${Stage}-${Tenant}-${Microservice}-base-auth
+                Value: !Sub ${Stage}-${Tenant}-${Microservice}-basic-auth
               - Key: Microservice
                 Value: !Ref Microservice
               - Key: Region
@@ -262,7 +262,7 @@ Resources:
                   - Name: KEY_ARN
                     Value: !Ref KeyArn
                   - Name: BASIC_AUTH_SECRET
-                    Value: !GetAtt BaseAuthSecretManager.Id
+                    Value: !GetAtt BasicAuthSecretManager.Id
 
                 Image: !Sub 
                   - "${uri}:${tag}"
