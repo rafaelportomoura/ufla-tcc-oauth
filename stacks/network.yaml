@@ -247,13 +247,16 @@ Resources:
     # -----------------------------------------
     # APP MESH
     # -----------------------------------------
-    ServiceDiscoveryInstance:
-        Type: AWS::ServiceDiscovery::Instance
+    CloudMapService:
+        Type: AWS::ServiceDiscovery::Service
         Properties:
-            InstanceAttributes: 
-                AWS_INSTANCE_IPV4: "192.0.2.44"
-                AWS_INSTANCE_PORT: 80
-            ServiceId: {"Fn::ImportValue": !Sub "${Stage}-${Tenant}-cloud-map-service-id"}
+            Name: !Ref Microservice
+            NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
+            DnsConfig:
+                DnsRecords:
+                  - Type: A
+                    TTL: 60
+                RoutingPolicy: MULTIVALUE
 
     VirtualNode:
         Type: AWS::AppMesh::VirtualNode
@@ -465,3 +468,9 @@ Outputs:
         Value: !GetAtt TargetGroup.TargetGroupArn
         Export:
             Name: !Sub ${Stage}-${Tenant}-${Microservice}-target-group-arn
+
+    CloudMapServiceArn:
+        Description: CloudMap Service Arn
+        Value: !GetAtt CloudMapService.Arn
+        Export:
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}-cloud-map-service-arn

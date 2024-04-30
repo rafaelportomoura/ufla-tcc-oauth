@@ -328,6 +328,8 @@ Resources:
               - ContainerName: !Sub ${Stage}-${Tenant}-${Microservice}-http
                 ContainerPort: 80
                 TargetGroupArn: !Ref TargetGroupArn
+            ServiceRegistries:
+                 - RegistryArn: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-${Microservice}-cloud-map-service-arn"}
             NetworkConfiguration:
                 AwsvpcConfiguration:
                     AssignPublicIp: DISABLED
