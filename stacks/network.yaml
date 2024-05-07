@@ -257,12 +257,6 @@ Resources:
     # -----------------------------------------
     # APP MESH
     # -----------------------------------------
-    CloudMapNamespace:
-        Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-        Properties:
-            Name: !Sub ${Stage}-${Tenant}.${Microservice}
-            Vpc: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-vpc-id"}
-
     CloudMapService:
         Type: AWS::ServiceDiscovery::Service
         Properties:
@@ -275,7 +269,7 @@ Resources:
                 DnsRecords:
                   - Type: A
                     TTL: 60
-                NamespaceId: !Ref CloudMapNamespace
+                NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
                 RoutingPolicy: MULTIVALUE
 
     VirtualNode:
