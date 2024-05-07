@@ -216,7 +216,7 @@ Resources:
             IdentitySource:
               - $request.header.Authorization
               - $context.routeKey
-              - $request.path
+              - $context.path
         
     LambdaPermission:
         Type: AWS::Lambda::Permission
@@ -257,15 +257,21 @@ Resources:
     # -----------------------------------------
     # APP MESH
     # -----------------------------------------
+    CloudMapNamespace:
+        Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+        Properties:
+            Name: !Sub ${Stage}-${Tenant}.${Microservice}
+            Vpc: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-vpc-id"}
+
     CloudMapService:
         Type: AWS::ServiceDiscovery::Service
         Properties:
             Name: !Ref Microservice
-            NamespaceId: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-id"}
             DnsConfig:
                 DnsRecords:
                   - Type: A
                     TTL: 60
+                NamespaceId: !Ref CloudMapNamespace
                 RoutingPolicy: MULTIVALUE
 
     VirtualNode:
@@ -281,7 +287,7 @@ Resources:
                         Protocol: http
                 ServiceDiscovery:
                     AWSCloudMap:
-                        NamespaceName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-name"}
+                        NamespaceName: !Sub ${Stage}-${Tenant}.${Microservice}
                         ServiceName: !Ref Microservice
             Tags:
               - Key: Service
