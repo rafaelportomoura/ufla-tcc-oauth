@@ -16,12 +16,15 @@ import {
   ForgotPasswordCommandOutput,
   InitiateAuthCommand,
   InitiateAuthRequest,
-  InitiateAuthResponse
+  InitiateAuthResponse,
+  UserNotFoundException
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoAccessTokenPayload, CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
 import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
+import { CODE_MESSAGES } from '../constants/codeMessages';
+import { NotFoundError } from '../exceptions/NotFoundError';
 import { UnauthorizedError } from '../exceptions/Unauthorized';
 import { ConfirmForgotPasswordRequest, LoginRequest } from '../types/Cognito';
 
@@ -86,12 +89,18 @@ export class Cognito {
   }
 
   getUser(username: string): Promise<Required<AdminGetUserResponse>> {
-    const command = new AdminGetUserCommand({
-      UserPoolId: this.pool_id,
-      Username: username
-    });
-
-    return this.client.send(command) as Promise<Required<AdminGetUserResponse>>;
+    try {
+      
+      const command = new AdminGetUserCommand({
+        UserPoolId: this.pool_id,
+        Username: username
+      });
+  
+      return this.client.send(command) as Promise<Required<AdminGetUserResponse>>;
+    } catch (error) {
+      if (error instanceof UserNotFoundException) throw new NotFoundError(CODE_MESSAGES.USER_NOT_FOUND);
+      throw error;
+    }
   }
 
   login({ username, password }: LoginRequest): Promise<InitiateAuthResponse> {
