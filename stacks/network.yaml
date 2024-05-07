@@ -130,6 +130,15 @@ Resources:
             Target: !Sub integrations/${Integration}
             AuthorizationType: NONE
 
+    ValidateTokenRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref Api
+            RouteKey: POST /oauth/validate-token
+            Target: !Sub integrations/${Integration}
+            AuthorizationType: NONE
+
+
     RouteOptions:
         Type: AWS::ApiGatewayV2::Route
         Properties:
