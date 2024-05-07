@@ -331,7 +331,6 @@ Resources:
                 TargetGroupArn: !Ref TargetGroupArn
             ServiceRegistries:
                 - ContainerName: !Sub ${Stage}-${Tenant}-${Microservice}-http
-                  ContainerPort: 80
                   RegistryArn: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-${Microservice}-cloud-map-service-arn"}
             NetworkConfiguration:
                 AwsvpcConfiguration:
