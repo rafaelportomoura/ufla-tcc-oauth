@@ -78,8 +78,6 @@ API_GATEWAY_STACK = api.stack(
     log_level=args["log_level_compute"],
 )
 
-typescript.remove(package="fastify")
-typescript.build()
 cloudformation.package_and_deploy_stack(stack=API_GATEWAY_STACK)
 
 if not cloudformation.stack_is_succesfully_deployed(stack_name=API_GATEWAY_STACK["stack_name"]):
