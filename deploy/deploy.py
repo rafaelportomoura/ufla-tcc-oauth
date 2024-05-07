@@ -78,7 +78,7 @@ API_GATEWAY_STACK = api.stack(
     log_level=args["log_level_compute"],
 )
 
-cloudformation.package_and_deploy_stack(stack=API_GATEWAY_STACK)
+cloudformation.package_and_deploy_stack(stack=API_GATEWAY_STACK, output="stacks/output.yaml")
 
 if not cloudformation.stack_is_succesfully_deployed(stack_name=API_GATEWAY_STACK["stack_name"]):
     raise DeployException(stack=API_GATEWAY_STACK)
