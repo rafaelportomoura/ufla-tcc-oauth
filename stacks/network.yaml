@@ -261,10 +261,6 @@ Resources:
         Type: AWS::ServiceDiscovery::Service
         Properties:
             Name: !Ref Microservice
-            HealthCheckConfig:
-                Type: HTTP
-                ResourcePath: /health-check
-                FailureThreshold: 3
             DnsConfig:
                 DnsRecords:
                   - Type: A
