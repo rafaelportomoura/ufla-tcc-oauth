@@ -281,7 +281,7 @@ Resources:
                         Protocol: http
                 ServiceDiscovery:
                     AWSCloudMap:
-                        NamespaceName: !Sub ${Stage}-${Tenant}.${Microservice}
+                        NamespaceName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-cloud-map-namespace-name"}
                         ServiceName: !Ref Microservice
             Tags:
               - Key: Service
