@@ -216,6 +216,7 @@ Resources:
             IdentitySource:
               - $request.header.Authorization
               - $context.routeKey
+              - $request.path
         
     LambdaPermission:
         Type: AWS::Lambda::Permission
