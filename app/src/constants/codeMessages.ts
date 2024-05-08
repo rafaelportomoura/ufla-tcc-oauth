@@ -60,5 +60,9 @@ export const CODE_MESSAGES = {
   UNAUTHORIZED: {
     code: prefix(n++),
     message: 'Unauthorized!'
+  },
+  INVALID_PASSWORD_ENCRYPTION: {
+    code: prefix(n++),
+    message: 'Invalid password encryption!'
   }
 } as const;
