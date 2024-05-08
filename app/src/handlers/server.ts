@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import FastifyCors from '@fastify/cors';
 import Fastify from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 
@@ -12,12 +11,6 @@ import { router } from '../routes';
       level: 'silent'
     }
   });
-  await server.register(FastifyCors, {
-    origin: '*',
-    allowedHeaders: '*',
-    methods: '*'
-  });
-
   server.get('/health-check', (_, res) => res.status(StatusCodes.OK).send('alive'));
 
   await server.register(router);
