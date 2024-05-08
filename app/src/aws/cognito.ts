@@ -17,6 +17,7 @@ import {
   InitiateAuthCommand,
   InitiateAuthRequest,
   InitiateAuthResponse,
+  NotAuthorizedException,
   UserNotFoundException
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
@@ -24,6 +25,7 @@ import { CognitoAccessTokenPayload, CognitoJwtPayload } from 'aws-jwt-verify/jwt
 import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { CODE_MESSAGES } from '../constants/codeMessages';
+import { BadRequestError } from '../exceptions/BadRequestError';
 import { NotFoundError } from '../exceptions/NotFoundError';
 import { UnauthorizedError } from '../exceptions/Unauthorized';
 import { ConfirmForgotPasswordRequest, LoginRequest } from '../types/Cognito';
@@ -90,12 +92,11 @@ export class Cognito {
 
   getUser(username: string): Promise<Required<AdminGetUserResponse>> {
     try {
-      
       const command = new AdminGetUserCommand({
         UserPoolId: this.pool_id,
         Username: username
       });
-  
+
       return this.client.send(command) as Promise<Required<AdminGetUserResponse>>;
     } catch (error) {
       if (error instanceof UserNotFoundException) throw new NotFoundError(CODE_MESSAGES.USER_NOT_FOUND);
@@ -104,18 +105,24 @@ export class Cognito {
   }
 
   login({ username, password }: LoginRequest): Promise<InitiateAuthResponse> {
-    const input: InitiateAuthRequest = {
-      AuthFlow: 'USER_PASSWORD_AUTH',
-      ClientId: this.client_id,
-      AuthParameters: {
-        USERNAME: username,
-        PASSWORD: password
-      }
-    };
+    try {
+      const input: InitiateAuthRequest = {
+        AuthFlow: 'USER_PASSWORD_AUTH',
+        ClientId: this.client_id,
+        AuthParameters: {
+          USERNAME: username,
+          PASSWORD: password
+        }
+      };
 
-    const command = new InitiateAuthCommand(input);
+      const command = new InitiateAuthCommand(input);
 
-    return this.client.send(command);
+      return this.client.send(command);
+    } catch (error) {
+      if (error instanceof NotAuthorizedException)
+        throw new BadRequestError(CODE_MESSAGES.INCORRECT_USERNAME_OR_PASSWORD);
+      throw error;
+    }
   }
 
   forgotPassword(username: string): Promise<ForgotPasswordCommandOutput> {

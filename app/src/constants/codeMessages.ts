@@ -64,5 +64,9 @@ export const CODE_MESSAGES = {
   INVALID_PASSWORD_ENCRYPTION: {
     code: prefix(n++),
     message: 'Invalid password encryption!'
+  },
+  INCORRECT_USERNAME_OR_PASSWORD: {
+    code: prefix(n++),
+    message: 'Incorrect username or password!'
   }
 } as const;
