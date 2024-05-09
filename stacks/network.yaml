@@ -216,7 +216,6 @@ Resources:
         Type: AWS::ApiGatewayV2::ApiMapping
         Properties:
             ApiId: !Ref Api
-            ApiMappingKey: !Ref ApiBasePath
             DomainName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-domain-name"}
             Stage: !Ref ApiStage
 
