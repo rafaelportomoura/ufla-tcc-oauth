@@ -3,17 +3,19 @@ from scripts.stacks import Stack, stack_name
 
 
 def my_stack_name(stage: str, tenant: str) -> str:
-    return stack_name(stage=stage, tenant=tenant, name="OAuth-Api")
+    return stack_name(stage=stage, tenant=tenant, name="OAuth-Network")
 
 
 def stack(
     stage: str,
     tenant: str,
     microservice: str,
-    base_path: str,
     listener_arn: str,
     authorizer_result_ttl_in_seconds: int,
-    log_level: str
+    log_level: str,
+    domain_name: str,
+    hosted_zone: str,
+    certificate:str
 ) -> Stack:
     return Stack(
         template=path("stacks", "network.yaml"),
@@ -22,9 +24,11 @@ def stack(
             "Stage": stage,
             "Tenant": tenant,
             "Microservice": microservice,
-            "ApiBasePath": base_path,
             "ListenerArn": listener_arn,
             "AuthorizerResultTtlInSeconds": authorizer_result_ttl_in_seconds,
-            "LogLevel": log_level
+            "LogLevel": log_level,
+            "DomainName": domain_name,
+            "HostedZone": hosted_zone,
+            "Certificate": certificate
         }
     )

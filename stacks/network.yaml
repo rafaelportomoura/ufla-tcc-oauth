@@ -26,6 +26,13 @@ Parameters:
           - info
           - verbose
           - debug
+    DomainName:
+        Type: String
+    HostedZone:
+        Type: AWS::Route53::HostedZone::Id
+    Certificate:
+        Type: String
+        
 Conditions:
     isProd: !Equals [!Ref Stage, prod]
 
@@ -175,6 +182,35 @@ Resources:
                 Microservice: !Ref Microservice
                 Stage: !Ref Stage
                 Tenant: !Ref Tenant
+
+    APIGatewayCustomDomain:
+        Type: AWS::ApiGatewayV2::DomainName
+        Properties:
+            DomainName: !Sub api.${Microservice}.${DomainName}
+            DomainNameConfigurations:
+              - SecurityPolicy: TLS_1_2
+                CertificateArn: !Ref Certificate
+                EndpointType: REGIONAL
+            Tags:
+                Service: ApiGatewayV2
+                Resource: DomainName
+                Name: !Sub ${Stage}-${Tenant}-api-gateway-domain-name
+                Stage: !Ref Stage
+                Tenant: !Ref Tenant
+                StackName: !Ref AWS::StackName
+                StackId: !Ref AWS::StackId
+                Region: !Ref AWS::Region
+
+    DNSRecordAPIs:
+        Type: AWS::Route53::RecordSet
+        Properties:
+            HostedZoneId: !Ref HostedZone
+            Name: !Sub api.${Microservice}.${DomainName}
+            AliasTarget:
+                DNSName: !GetAtt APIGatewayCustomDomain.RegionalDomainName
+                EvaluateTargetHealth: false
+                HostedZoneId: !GetAtt APIGatewayCustomDomain.RegionalHostedZoneId
+            Type: A
 
     ApiMapping:
         Type: AWS::ApiGatewayV2::ApiMapping
