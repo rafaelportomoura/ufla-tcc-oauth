@@ -8,8 +8,6 @@ Parameters:
         Type: String
     Microservice:
         Type: String
-    ApiBasePath:
-        Type: String
     ListenerArn:
         Type: String
     AuthorizerResultTtlInSeconds:
