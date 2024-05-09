@@ -192,7 +192,7 @@ Resources:
             Tags:
                 Service: ApiGatewayV2
                 Resource: DomainName
-                Name: !Sub ${Stage}-${Tenant}-api-gateway-domain-name
+                Name: !Sub ${Stage}-${Tenant}-${Microservice}-api-gateway-domain-name
                 Stage: !Ref Stage
                 Tenant: !Ref Tenant
                 StackName: !Ref AWS::StackName
@@ -214,7 +214,7 @@ Resources:
         Type: AWS::ApiGatewayV2::ApiMapping
         Properties:
             ApiId: !Ref Api
-            DomainName: {'Fn::ImportValue': !Sub "${Stage}-${Tenant}-api-gateway-domain-name"}
+            DomainName: !Ref APIGatewayCustomDomain
             Stage: !Ref ApiStage
 
     ApiStage:
@@ -517,3 +517,9 @@ Outputs:
         Value: !GetAtt CloudMapService.Arn
         Export:
             Name: !Sub ${Stage}-${Tenant}-${Microservice}-cloud-map-service-arn
+
+    ApiCustomDomainNameArn:
+        Description: "Custom Domain Name arn"
+        Value: !Ref APIGatewayCustomDomain
+        Export:
+            Name: !Sub ${Stage}-${Tenant}-${Microservice}-api-gateway-domain-name
