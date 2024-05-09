@@ -34,6 +34,7 @@ cloudformation = CloudFormation(profile=profile, region=region, log_level=log_le
 # 🚀 ECS
 ################################################
 exports = cloudformation.list_exports()
+key_arn = cloudformation.get_export_value(exports=exports, name=f"{stage}-{tenant}-encrypt-key-arn")
 target = cloudformation.get_export_value(
     exports=exports, name=f"{stage}-{tenant}-{microservice}-target-group-arn"
 )
@@ -48,6 +49,7 @@ ECS_STACK = ecs.stack(
     scale_out_cooldown=args["scale_out_cooldown"],
     scale_in_cooldown=args["scale_in_cooldown"],
     cpu_utilization=args["cpu_utilization"],
+    key_arn=key_arn,
     target_group=target
 )
 
