@@ -73,4 +73,28 @@ export class AuthorizerData {
       ...d
     };
   }
+
+  static policyDocument(effect: string, sub: string, arn: string) {
+    return {
+      principalId: sub,
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: effect,
+            Resource: arn
+          }
+        ]
+      }
+    };
+  }
+
+  static denyPolicyDocument(sub: string, arn: string): unknown {
+    return this.policyDocument('Deny', sub, arn);
+  }
+
+  static allowPolicyDocument(username: string, sub: string, arn: string): unknown {
+    return { ...this.policyDocument('Allow', sub, arn), context: { headers: JSON.stringify({ username }) } };
+  }
 }

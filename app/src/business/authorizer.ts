@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-empty-function */
 import { CognitoAccessTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { pathToRegexp } from 'path-to-regexp';
@@ -13,6 +14,11 @@ export class Authorizer {
 
   constructor(args: AuthorizerArgs) {
     this.cognito = args.cognito;
+  }
+
+  static methodPath(method_arn: string): string {
+    const [_, __, method, ...path] = method_arn.split('/');
+    return [method, ...path].join('/');
   }
 
   async authorize(token: string, method_arn: string): Promise<CognitoAccessTokenPayload> {
@@ -33,9 +39,7 @@ export class Authorizer {
   }
 
   async validate(method_arn: string, decoded_token: CognitoAccessTokenPayload): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, __, method, ...path] = method_arn.split('/');
-    const method_path = [method, ...path].join('/');
+    const method_path = Authorizer.methodPath(method_arn);
 
     if (pathToRegexp('GET/keys/pub-key').test(method_path)) return;
 
