@@ -1,7 +1,6 @@
 import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provider';
-import { KMS } from '../aws/kms';
-/* eslint-disable no-empty-function */
 import { Cognito } from '../aws/cognito';
+import { KMS } from '../aws/kms';
 import { Login, LoginArgs, LoginResponse } from '../types/Login';
 
 export class LoginBusiness {
@@ -19,7 +18,7 @@ export class LoginBusiness {
     const login_response = await this.cognito.login({ username, password });
     const auth_result = login_response.AuthenticationResult as Required<AuthenticationResultType>;
     const { UserAttributes } = await this.cognito.getUser(username);
-    const group = UserAttributes.find((v) => v.Name === 'group')?.Value;
+    const group = this.cognito.getGroup(UserAttributes);
 
     return {
       access_token: auth_result.AccessToken,
