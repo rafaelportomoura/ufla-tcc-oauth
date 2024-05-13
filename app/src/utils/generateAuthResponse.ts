@@ -12,7 +12,7 @@ export class GenerateAuthResponse {
     };
   }
 
-  static error(cognito_id: string, arn: string): unknown {
+  static error(cognito_id: string | undefined, arn: string): unknown {
     const policy_document = this.generatePolicyDocument('Deny', arn);
 
     return { principalId: cognito_id ?? this.defaultSub(), policyDocument: policy_document };
