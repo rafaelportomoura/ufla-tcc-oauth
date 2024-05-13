@@ -18,7 +18,7 @@ describe('Controller -> CreateAdmin', async () => {
     expect(status_spy.args).deep.eq([[201]]);
     expect(response).to.deep.equal(CODE_MESSAGES.ADMIN_CREATED);
   });
-  it('Should create admin', async () => {
+  it('Should not create admin', async () => {
     const status_spy = Sinon.spy(res, 'status');
     const req = fastify_request({ body: UsersData.create_user({ username: 2 as unknown as string }) });
     const response = await createAdmin(req, res);

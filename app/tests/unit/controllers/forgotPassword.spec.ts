@@ -18,7 +18,7 @@ describe('Controller -> ForgotPassword', async () => {
     expect(status_spy.args).deep.eq([[201]]);
     expect(response).to.deep.equal(CODE_MESSAGES.PASSWORD_CHANGED_RESPONSE);
   });
-  it('Should forgot password', async () => {
+  it('Should not forgot password', async () => {
     const status_spy = Sinon.spy(res, 'status');
     const req = fastify_request({ body: { username: 2 as unknown as string } });
     const response = await forgotPassword(req, res);
