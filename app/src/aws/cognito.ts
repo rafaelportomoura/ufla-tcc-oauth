@@ -24,7 +24,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoAccessTokenPayload, CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
-import { CreateUser, SetUserPasswordCognito, User, UserAttributes, UserGroup } from '../types/User';
+import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { BadRequestError } from '../exceptions/BadRequestError';
@@ -185,6 +185,6 @@ export class Cognito {
 
     const { Users: users, PaginationToken: next } = await this.client.send(new ListUsersCommand(command));
 
-    return { users: users as User[], next: !!next };
+    return { users, next: !!next };
   }
 }
