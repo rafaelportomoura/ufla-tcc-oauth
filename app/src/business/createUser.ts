@@ -1,7 +1,9 @@
 /* eslint-disable no-empty-function */
+import { InvalidParameterException } from '@aws-sdk/client-cognito-identity-provider';
 import { Cognito } from '../aws/cognito';
 import { KMS } from '../aws/kms';
-import { cognitoErrorHandler } from '../exceptions/cognitoErrorHandler';
+import { CODE_MESSAGES } from '../constants/codeMessages';
+import { BadRequestError } from '../exceptions/BadRequestError';
 import { CreateUserArgs } from '../types/CreateUserArgs';
 import { CreateUser, SetUserPasswordCognito, UserGroup } from '../types/User';
 
@@ -24,7 +26,10 @@ export class CreateUserBusiness {
       await this.cognito.createUser(payload, this.group);
       await this.cognito.setUserPassword(this.set_user_password_cognito_payload(payload.username, password));
     } catch (error) {
-      throw cognitoErrorHandler(error);
+      if (error instanceof InvalidParameterException)
+        throw new BadRequestError({ code: CODE_MESSAGES.VALIDATION_ERROR.code, message: error.message });
+
+      throw error;
     }
   }
 

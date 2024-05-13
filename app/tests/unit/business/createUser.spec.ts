@@ -1,9 +1,11 @@
 /* eslint-disable dot-notation */
+import { InvalidParameterException } from '@aws-sdk/client-cognito-identity-provider';
 import { expect } from 'chai';
 import Sinon from 'sinon';
 import { KMS } from '../../../src/aws/kms';
 import { CreateUserBusiness } from '../../../src/business/createUser';
 import { USER_COMMON_GROUPS } from '../../../src/constants/groups';
+import { BadRequestError } from '../../../src/exceptions/BadRequestError';
 import { CognitoData } from '../../data/cognito';
 import { UsersData } from '../../data/users';
 
@@ -29,5 +31,14 @@ describe('Business -> CreateUser', async () => {
     Sinon.stub(create_user['cognito'], 'createUser').throws(new Error());
     const response = await create_user.create(UsersData.create_user()).catch((e) => e);
     expect(response).deep.eq(new Error());
+  });
+
+  it('Should not create - validation', async () => {
+    Sinon.stub(create_user['kms'], 'decrypt').resolves('password');
+    Sinon.stub(create_user['cognito'], 'createUser').throws(
+      new InvalidParameterException({ message: '', $metadata: {} })
+    );
+    const response = await create_user.create(UsersData.create_user()).catch((e) => e);
+    expect(response).instanceOf(BadRequestError);
   });
 });
