@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { APIGatewayRequestAuthorizerEvent, APIGatewayTokenAuthorizerEvent, Callback, Context } from 'aws-lambda';
 import { log } from 'console';
 import { Cognito } from '../aws/cognito';

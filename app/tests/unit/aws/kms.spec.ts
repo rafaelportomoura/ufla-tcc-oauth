@@ -31,7 +31,6 @@ describe('AWS -> KMS', () => {
     expect(response).not.instanceof(BadRequestError);
   });
   it('Should get public key', async () => {
-    const value = 'encryptedValue';
     const kms = new KMS('key_arn', {});
     Sinon.stub(kms['client'], 'send').resolves({
       KeySpec: 'RSA_2048',

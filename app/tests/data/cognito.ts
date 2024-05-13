@@ -16,4 +16,15 @@ export class CognitoData {
       ]
     } as Required<AdminGetUserResponse & UserType>;
   }
+
+  static userType(username: string, group: string): Required<UserType> {
+    return {
+      Username: username,
+      Attributes: [
+        { Name: 'sub', Value: 'sub' },
+        { Name: 'email', Value: 'email' },
+        { Name: 'custom:group', Value: group }
+      ]
+    } as Required<UserType>;
+  }
 }

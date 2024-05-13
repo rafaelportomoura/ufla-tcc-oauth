@@ -49,7 +49,7 @@ export async function sysAdminCreateAdmin(req: FastifyRequest, res: FastifyReply
       kms: new KMS(CONFIGURATION.KEY_ARN, aws_config())
     });
     await business.create(body);
-    res.status(StatusCodes.OK);
+    res.status(StatusCodes.CREATED);
 
     return CODE_MESSAGES.ADMIN_CREATED;
   } catch (error) {

@@ -10,6 +10,6 @@ export class ListUserBusiness {
 
   async list({ page, size }: ListUserParams): Promise<ListUserResponse> {
     const response = await this.cognito.listUsers({ page, size });
-    return response;
+    return response as ListUserResponse;
   }
 }

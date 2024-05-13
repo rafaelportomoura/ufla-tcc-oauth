@@ -19,6 +19,7 @@ export class BasicAuthBusiness {
   }
 
   async validate(auth: string): Promise<void> {
+    if (!auth) throw new UnauthorizedError(CODE_MESSAGES.INVALID_CREDENTIALS);
     const { username, password } = await this.secret_manager.getSecret<BasicAuth>(this.secret_path);
 
     const auth_string = `${username}:${password}`;
