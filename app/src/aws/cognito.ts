@@ -35,21 +35,13 @@ import { ConfirmForgotPasswordRequest, LoginRequest } from '../types/Cognito';
 export class Cognito {
   private client: CognitoIdentityProviderClient;
 
-  private verifier: ReturnType<typeof CognitoJwtVerifier.create>;
-
   constructor(
     private pool_id: string,
     private client_id: string,
-    scope: string,
+    private scope: string,
     config: CognitoIdentityProviderClientConfig
   ) {
     this.client = new CognitoIdentityProviderClient(config);
-    this.verifier = CognitoJwtVerifier.create({
-      userPoolId: pool_id,
-      tokenUse: 'access',
-      clientId: client_id,
-      scope
-    });
   }
 
   createUser(payload: CreateUser, group: UserGroup): Promise<AdminCreateUserResponse> {
@@ -165,7 +157,13 @@ export class Cognito {
 
   async verify<T extends CognitoJwtPayload = CognitoAccessTokenPayload>(jwt: string): Promise<T> {
     try {
-      const payload = await this.verifier.verify(jwt);
+      const verifier: ReturnType<typeof CognitoJwtVerifier.create> = CognitoJwtVerifier.create({
+        userPoolId: this.pool_id,
+        tokenUse: 'access',
+        clientId: this.client_id,
+        scope: this.scope
+      });
+      const payload = await verifier.verify(jwt);
       return payload as T;
     } catch {
       throw new UnauthorizedError();

@@ -9,7 +9,7 @@ export const CONFIGURATION = {
   TENANT: set_string_env('TENANT', 'tcc'),
   REGION: set_string_env('REGION', 'us-east-2'),
   MICROSERVICE: set_string_env('MICROSERVICE', 'oauth'),
-  LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', LoggerLevel.debug),
+  LOG_LEVEL: set_env<LoggerLevel>('LOG_LEVEL', LoggerLevel.silent),
   PORT: set_number_env('PORT', 3000),
   KEY_ARN: set_string_env('KEY_ARN', ''),
   COGNITO_CLIENT_ID: set_string_env('COGNITO_CLIENT_ID', ''),

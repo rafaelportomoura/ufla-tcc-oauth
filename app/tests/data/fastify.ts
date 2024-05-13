@@ -1,4 +1,6 @@
-import { FastifyRequest } from 'fastify';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prettier/prettier */
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { IncomingHttpHeaders } from 'node:http';
 
 type FastifyRequestMock = {
@@ -16,3 +18,10 @@ export const fastify_request = (req?: FastifyRequestMock): FastifyRequest =>
     headers: {},
     ...req
   }) as FastifyRequest;
+
+export const fastify_reply = (res?: Partial<FastifyReply>): FastifyReply =>
+  ({
+    send: (...args: any[]) => {},
+    status: (...args: any[]) => {},
+    ...res
+  }) as FastifyReply;
