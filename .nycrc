@@ -3,13 +3,7 @@
   "check-coverage": true,
   "extension": [".ts"],
   "include": ["app/src/**/*.ts"],
-  "exclude": [
-    "app/src/constants/*.ts",
-    "app/src/configs/*.ts",
-    "app/src/routes/*.ts",
-    "app/src/aws/*.ts",
-    "app/src/handlers/server.ts"
-  ],
+  "exclude": ["app/src/constants/*.ts", "app/src/configs/*.ts", "app/src/routes/*.ts", "app/src/handlers/server.ts"],
   "settings": {
     "lines": 100,
     "branches": 100,

@@ -92,7 +92,7 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  getUser(username: string): Promise<Required<AdminGetUserResponse>> {
+  async getUser(username: string): Promise<Required<AdminGetUserResponse>> {
     try {
       const command = new AdminGetUserCommand({
         UserPoolId: this.pool_id,
@@ -106,7 +106,7 @@ export class Cognito {
     }
   }
 
-  login({ username, password }: LoginRequest): Promise<InitiateAuthResponse> {
+  async login({ username, password }: LoginRequest): Promise<InitiateAuthResponse> {
     try {
       const input: InitiateAuthRequest = {
         AuthFlow: 'USER_PASSWORD_AUTH',
@@ -127,7 +127,7 @@ export class Cognito {
     }
   }
 
-  forgotPassword(username: string): Promise<ForgotPasswordCommandOutput> {
+  async forgotPassword(username: string): Promise<ForgotPasswordCommandOutput> {
     const command = new ForgotPasswordCommand({
       ClientId: this.client_id,
       Username: username,
@@ -137,7 +137,7 @@ export class Cognito {
     return this.client.send(command);
   }
 
-  confirmForgotPassword(payload: ConfirmForgotPasswordRequest): Promise<ConfirmForgotPasswordCommandOutput> {
+  async confirmForgotPassword(payload: ConfirmForgotPasswordRequest): Promise<ConfirmForgotPasswordCommandOutput> {
     const command = new ConfirmForgotPasswordCommand({
       ClientId: this.client_id,
       Username: payload.username,
