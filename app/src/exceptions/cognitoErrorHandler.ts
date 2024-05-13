@@ -3,7 +3,7 @@ import { CODE_MESSAGES } from '../constants/codeMessages';
 import { BadRequestError } from './BadRequestError';
 import { BaseError } from './BaseError';
 
-export function cognitoErrorHandler(error: unknown): BaseError | unknown {
+export function cognitoErrorHandler(error: Error): BaseError | Error {
   if (error instanceof InvalidParameterException)
     return new BadRequestError({ code: CODE_MESSAGES.VALIDATION_ERROR.code, message: error.message });
 
