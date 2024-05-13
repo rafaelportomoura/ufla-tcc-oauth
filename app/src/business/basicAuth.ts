@@ -1,9 +1,9 @@
 /* eslint-disable no-empty-function */
+import { Logger } from '../adapters/logger';
 import { SecretsManager } from '../aws/secretsManager';
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { UnauthorizedError } from '../exceptions/Unauthorized';
 import { BasicAuth, BasicAuthArgs } from '../types/BasicAuth';
-import { Logger } from '../types/Logger';
 
 export class BasicAuthBusiness {
   private secret_manager: SecretsManager;

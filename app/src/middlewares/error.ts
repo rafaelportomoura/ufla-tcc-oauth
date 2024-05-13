@@ -1,7 +1,7 @@
+import { Logger } from '../adapters/logger';
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { BaseError } from '../exceptions/BaseError';
 import { InternalServerError } from '../exceptions/InternalServerError';
-import { Logger } from '../types/Logger';
 
 export const error_handler = (logger: Logger, error: Error, place: string) => {
   logger.error(place, error.message, error);

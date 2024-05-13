@@ -1,5 +1,5 @@
+import { Logger } from '../adapters/logger';
 import { SecretsManager } from '../aws/secretsManager';
-import { Logger } from './Logger';
 
 export type BasicAuth = {
   username: string;
