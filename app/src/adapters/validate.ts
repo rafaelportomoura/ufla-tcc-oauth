@@ -10,6 +10,6 @@ export class Validator<T> {
 
     if (result.success) return result.data;
 
-    throw new ValidationError(result.error.format());
+    throw new ValidationError(result.error.formErrors.fieldErrors);
   }
 }
