@@ -30,4 +30,18 @@ describe('AWS -> KMS', () => {
     const response = await kms.decrypt(value).catch((e) => e);
     expect(response).not.instanceof(BadRequestError);
   });
+  it('Should get public key', async () => {
+    const value = 'encryptedValue';
+    const kms = new KMS('key_arn', {});
+    Sinon.stub(kms['client'], 'send').resolves({
+      KeySpec: 'RSA_2048',
+      PublicKey: Buffer.from('publicKey')
+    });
+    const response = await kms.getPubKey();
+    expect(response).deep.eq({
+      key_spec: 'RSA_2048',
+      encryption_algorithm: 'RSAES_OAEP_SHA_256',
+      public_key: 'cHVibGljS2V5'
+    });
+  });
 });
