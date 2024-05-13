@@ -35,7 +35,7 @@ export async function createAdmin(req: FastifyRequest, res: FastifyReply): Promi
     await business.create(body);
 
     res.status(StatusCodes.CREATED);
-    return CODE_MESSAGES.CUSTOMER_CREATED;
+    return CODE_MESSAGES.ADMIN_CREATED;
   } catch (error) {
     const response = error_handler(logger, error, 'CreateAdmin');
 
