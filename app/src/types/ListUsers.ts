@@ -1,4 +1,4 @@
-import { ListUsersResponse } from '@aws-sdk/client-cognito-identity-provider';
+import { UserType } from '@aws-sdk/client-cognito-identity-provider';
 import { Cognito } from '../aws/cognito';
 
 export type ListUsersArgs = {
@@ -7,7 +7,7 @@ export type ListUsersArgs = {
 
 export type ListUserResponse = {
   next: boolean;
-  users: ListUsersResponse['Users'];
+  users: Required<UserType>[];
 };
 
 export type ListUserParams = {

@@ -12,7 +12,9 @@ import { USER_COMMON_GROUPS } from '../../../src/constants/groups';
 import { BadRequestError } from '../../../src/exceptions/BadRequestError';
 import { NotFoundError } from '../../../src/exceptions/NotFoundError';
 import { UnauthorizedError } from '../../../src/exceptions/Unauthorized';
-import { OAuthData } from '../../data/oauth';
+import { ListUserResponse } from '../../../src/types/ListUsers';
+import { AuthorizerData } from '../../data/authorizer';
+import { CognitoData } from '../../data/cognito';
 import { UsersData } from '../../data/users';
 
 describe('AWS -> Cognito', () => {
@@ -52,13 +54,13 @@ describe('AWS -> Cognito', () => {
     expect(response).not.instanceof(NotFoundError);
   });
   it('Should login', async () => {
-    const payload = OAuthData.login();
+    const payload = AuthorizerData.login();
     const stub = Sinon.stub(CognitoIdentityProviderClient.prototype, 'send').resolves({});
     await cognito.login(payload);
     expect(stub.calledOnce).eq(true);
   });
   it('Should throw bad request when login', async () => {
-    const payload = OAuthData.login();
+    const payload = AuthorizerData.login();
     Sinon.stub(CognitoIdentityProviderClient.prototype, 'send').throws(
       new NotAuthorizedException({ message: '', $metadata: {} })
     );
@@ -66,7 +68,7 @@ describe('AWS -> Cognito', () => {
     expect(response).instanceOf(BadRequestError);
   });
   it('Should throw error when login', async () => {
-    const payload = OAuthData.login();
+    const payload = AuthorizerData.login();
     Sinon.stub(CognitoIdentityProviderClient.prototype, 'send').throws(new Error());
     const response = await cognito.login(payload).catch((e) => e);
     expect(response).not.instanceOf(BadRequestError);
@@ -78,7 +80,7 @@ describe('AWS -> Cognito', () => {
   });
   it('Should confirm forgot password', async () => {
     const stub = Sinon.stub(CognitoIdentityProviderClient.prototype, 'send').resolves({});
-    await cognito.confirmForgotPassword(OAuthData.confirmForgotPassword());
+    await cognito.confirmForgotPassword(AuthorizerData.confirmForgotPassword());
     expect(stub.calledOnce).eq(true);
   });
   it('Should get group', async () => {
@@ -101,21 +103,21 @@ describe('AWS -> Cognito', () => {
   });
   it('Should list users at page 1', async () => {
     const stub = Sinon.stub(CognitoIdentityProviderClient.prototype, 'send');
-    stub.onFirstCall().resolves({ Users: [UsersData.user({ username: 'user1' })], PaginationToken: 'token' });
-    stub.onSecondCall().resolves({ Users: [UsersData.user({ username: 'user2' })] });
+    stub.onFirstCall().resolves({ Users: [CognitoData.user('user1', 'g')], PaginationToken: 'token' });
+    stub.onSecondCall().resolves({ Users: [CognitoData.user('user2', 'g')] });
     const response = await cognito.listUsers({ page: 1, size: 1 });
     expect(response.next).eq(true);
     expect(stub.calledOnce).eq(true);
-    expect(response.users[0].username).eq('user1');
+    expect((response.users as ListUserResponse['users'])[0].Username).eq('user1');
   });
   it('Should list users at page 2', async () => {
     const stub = Sinon.stub(CognitoIdentityProviderClient.prototype, 'send');
-    stub.onFirstCall().resolves({ Users: [UsersData.user({ username: 'user1' })], PaginationToken: 'token' });
-    stub.onSecondCall().resolves({ Users: [UsersData.user({ username: 'user2' })] });
+    stub.onFirstCall().resolves({ Users: [CognitoData.user('user1', 'g')], PaginationToken: 'token' });
+    stub.onSecondCall().resolves({ Users: [CognitoData.user('user2', 'g')] });
     const response = await cognito.listUsers({ page: 2, size: 1 });
     expect(response.next).eq(false);
     expect(stub.calledOnce).eq(false);
-    expect(response.users[0].username).eq('user2');
+    expect((response.users as ListUserResponse['users'])[0].Username).eq('user2');
   });
   it('Should throw not found error when list users at page 3', async () => {
     const stub = Sinon.stub(CognitoIdentityProviderClient.prototype, 'send');

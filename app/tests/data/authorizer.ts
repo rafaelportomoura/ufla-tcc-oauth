@@ -1,4 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import { faker } from '@faker-js/faker';
 import { CognitoAccessTokenPayload } from 'aws-jwt-verify/jwt-model';
+import { ConfirmForgotPasswordRequest, LoginRequest } from '../../src/types/Cognito';
 import { UsersData } from './users';
 
 export class AuthorizerData {
@@ -51,6 +54,23 @@ export class AuthorizerData {
       origin_jti: 'origin_jti',
       event_id: 'event_id',
       version: 2
+    };
+  }
+
+  static login(d?: Partial<LoginRequest>): LoginRequest {
+    return {
+      username: faker.internet.userName(),
+      password: faker.internet.password(),
+      ...d
+    };
+  }
+
+  static confirmForgotPassword(d?: Partial<ConfirmForgotPasswordRequest>): ConfirmForgotPasswordRequest {
+    return {
+      username: faker.internet.userName(),
+      password: faker.internet.password(),
+      confirmation_code: faker.number.int().toString(),
+      ...d
     };
   }
 }
