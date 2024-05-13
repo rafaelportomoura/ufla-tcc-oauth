@@ -6,7 +6,7 @@ import { Logger } from '../../../src/adapters/logger';
 import { LoggerLevel, LoggerLevelTier } from '../../../src/constants/loggerLevel';
 import { RecursiveClass } from '../../data/recursiveClass';
 
-describe.only('Test Suit - Logger', () => {
+describe('Adapters -> Logger', () => {
   beforeEach(sinon.restore);
   for (const level in LoggerLevel) {
     describe(`When log level is ${level}`, () => {
