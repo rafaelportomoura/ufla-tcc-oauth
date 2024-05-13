@@ -17,12 +17,14 @@ import {
   InitiateAuthCommand,
   InitiateAuthRequest,
   InitiateAuthResponse,
+  ListUsersCommand,
+  ListUsersCommandInput,
   NotAuthorizedException,
   UserNotFoundException
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoAccessTokenPayload, CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
-import { CreateUser, SetUserPasswordCognito, UserAttributes, UserGroup } from '../types/User';
+import { CreateUser, SetUserPasswordCognito, User, UserAttributes, UserGroup } from '../types/User';
 /* eslint-disable no-empty-function */
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { BadRequestError } from '../exceptions/BadRequestError';
@@ -168,5 +170,21 @@ export class Cognito {
     } catch {
       throw new UnauthorizedError();
     }
+  }
+
+  async listUsers({ page, size }: { page: number; size: number }) {
+    const command: ListUsersCommandInput = {
+      UserPoolId: this.pool_id,
+      Limit: size
+    };
+
+    for (let i = 0; i < page - 1; i++) {
+      command.PaginationToken = (await this.client.send(new ListUsersCommand(command))).PaginationToken;
+      if (!command.PaginationToken) throw new NotFoundError(CODE_MESSAGES.PAGE_NOT_FOUND);
+    }
+
+    const { Users: users, PaginationToken: next } = await this.client.send(new ListUsersCommand(command));
+
+    return { users: users as User[], next: !!next };
   }
 }

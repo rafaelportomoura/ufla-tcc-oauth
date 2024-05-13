@@ -9,6 +9,7 @@ import { Cognito } from '../aws/cognito';
 import { aws_config } from '../aws/config';
 import { KMS } from '../aws/kms';
 import { SecretsManager } from '../aws/secretsManager';
+import { ListUserBusiness } from '../business/listUser';
 import { CODE_MESSAGES } from '../constants/codeMessages';
 import { CONFIGURATION } from '../constants/configuration';
 import { USER_COMMON_GROUPS } from '../constants/groups';
@@ -30,14 +31,21 @@ export async function sysAdminCreateAdmin(req: FastifyRequest, res: FastifyReply
     await basic_auth_business.validate(auth_string as string);
     const validator = new Validator(create_user_schema);
     const body = await validator.validate(req.body);
+    const cognito = new Cognito(
+      CONFIGURATION.COGNITO_USER_POLL,
+      CONFIGURATION.COGNITO_CLIENT_ID,
+      CONFIGURATION.COGNITO_SCOPE,
+      aws_config()
+    );
+    const list_users = new ListUserBusiness({ cognito });
+    const { users } = await list_users.list({ page: 1, size: 1 });
+    if (users.length > 0) {
+      res.status(StatusCodes.CONFLICT);
+      return CODE_MESSAGES.ALREADY_HAS_USERS;
+    }
     const business = new CreateUserBusiness({
       group: USER_COMMON_GROUPS.ADMIN,
-      cognito: new Cognito(
-        CONFIGURATION.COGNITO_USER_POLL,
-        CONFIGURATION.COGNITO_CLIENT_ID,
-        CONFIGURATION.COGNITO_SCOPE,
-        aws_config()
-      ),
+      cognito,
       kms: new KMS(CONFIGURATION.KEY_ARN, aws_config())
     });
     await business.create(body);

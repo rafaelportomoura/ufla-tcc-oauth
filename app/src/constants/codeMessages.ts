@@ -29,6 +29,10 @@ export const CODE_MESSAGES = {
     code: prefix(n++),
     message: 'Admin created successfully!'
   },
+  ALREADY_HAS_USERS: {
+    code: prefix(n++),
+    message: 'Already has users!'
+  },
   INVALID_CREDENTIALS: {
     code: prefix(n++),
     message: 'Invalid Credentials!'
@@ -68,5 +72,9 @@ export const CODE_MESSAGES = {
   INCORRECT_USERNAME_OR_PASSWORD: {
     code: prefix(n++),
     message: 'Incorrect username or password!'
+  },
+  PAGE_NOT_FOUND: {
+    code: prefix(n++),
+    message: 'Page not found!'
   }
 } as const;
