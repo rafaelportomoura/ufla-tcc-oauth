@@ -17,6 +17,7 @@ Parameters:
           - info
           - verbose
           - debug
+          - silent
     KeyArn:
         Type: String
     MinContainers:
