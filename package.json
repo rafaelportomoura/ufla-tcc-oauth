@@ -14,8 +14,8 @@
     }
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=test ts-mocha app/tests/**/*.spec.ts",
-    "test:cov": "cross-env NODE_ENV=test nyc ts-mocha app/tests/**/*.spec.ts",
+    "test": "cross-env NODE_ENV=test ts-mocha",
+    "test:cov": "cross-env NODE_ENV=test nyc ts-mocha",
     "prepare": "husky install",
     "lint": "eslint --ext .ts . --max-warnings=0",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
