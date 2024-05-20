@@ -4,7 +4,7 @@ import { fastify_request } from '../../data/fastify';
 
 describe('Utils -> RequestId', () => {
   it('Should get request id by header', () => {
-    const response = request_id(fastify_request({ headers: { requestId: 'requestId' } }));
+    const response = request_id(fastify_request({ headers: { request_id: 'requestId' } }));
     expect(response).equal('requestId');
   });
   it('Should create request id', () => {
