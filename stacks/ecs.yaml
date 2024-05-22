@@ -137,6 +137,7 @@ Resources:
                           - cognito-idp:AdminGetUser
                           - cognito-idp:InitiateAuth
                           - cognito-idp:ForgotPassword
+                          - cognito-idp:ListUsers 
                           - secretsmanager:GetSecretValue
                         Resource: "*"
             Tags:
