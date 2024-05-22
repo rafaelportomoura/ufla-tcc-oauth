@@ -1,9 +1,10 @@
 from scripts.typescript import Typescript
 from scripts.cloudformation import CloudFormation
 from scripts.args import get_args
-from stacks import ecr
-from scripts.exception import DeployException
+from stacks import ecr, ecs
+from scripts.exception import DeployException, NotFoundException
 from scripts.docker import Docker
+from scripts.ecs import ECS
 
 args = get_args(
     {
@@ -42,3 +43,7 @@ ecr_uri = docker.ecr_uri(account_id=account_id, region=region)
 typescript.build()
 image=f"{stage}-{tenant}-{microservice}"
 docker.build_and_push(ecr_uri=ecr_uri,region=region, image=image, tag="latest")
+
+ecs_stack_name=ecs.my_stack_name(stage=stage, tenant=tenant)
+ecs = ECS(profile=profile, region=region, log_level=log_level)
+ecs.force_stack_new_deployment(cloudformation=cloudformation, stack_name=ecs_stack_name)
